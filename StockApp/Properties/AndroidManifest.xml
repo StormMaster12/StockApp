@@ -17,12 +17,5 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>     
     </acitvity>
-    
-		<activity android:name=".BarcodeFragment" android:label="Barcode Fragment">
-      
-    </activity>
-		<activity android:name=".BarcodeFragmentActivity" android:label="Activity Barcode" android:parentActivityName=".barcodeFragment">
-			<meta-data android:name="android.support.PARENT_ACTIVITY" android:value=".barcodeFragmentActivity"></meta-data>
-		</activity>
 	</application>
 </manifest>

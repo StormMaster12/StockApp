@@ -30,6 +30,7 @@ using StockApp.BarcodeReader;
 
 namespace StockApp
 {
+    [Activity(Label = "Barcode Fragment Activity")]
     class BarcodeFragmentActivity : AppCompatActivity
     {
         private static string tag = "Barcode-Reader";

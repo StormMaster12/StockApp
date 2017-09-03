@@ -21,8 +21,8 @@ using Android.Support.V7.App;
 
 namespace StockApp
 {
-    class BarcodeFragment : Android.Support.V4.App.Fragment, View.IOnClickListener
-    {
+    class BarcodeFragment : Android.Support.V4.App.Fragment
+    { 
         private CompoundButton autoFocus { get; set; }
         private CompoundButton useFlash { get; set; }
         private Button btnReadBarcode { get; set; }
@@ -35,22 +35,18 @@ namespace StockApp
 
         public BarcodeFragment() { }
 
-        public void OnClick(View v)
+        public void StartNewActivity(object sender, EventArgs e)
         {
-            if (v.Id == Resource.Id.read_barcode)
-            {
+            
+            //Intent intent = new Intent(Context.ApplicationContext,Activity.ClassLoader.LoadClass("barcodeFragmentActivity"));//("StockApp.StockApp", typeof(BarcodeFragmentActivity));
+            //intent.SetClassName("StockApp.StockApp", );
+            Intent intent = new Intent(this.Activity, typeof(BarcodeFragmentActivity));
+            intent.PutExtra("AutoFocus", autoFocus.Checked);
+            intent.PutExtra("UseFlash", useFlash.Checked);
 
-                Intent intent = new Intent(Context.ApplicationContext,Activity.ClassLoader.LoadClass("barcodeFragmentActivity"));//("StockApp.StockApp", typeof(BarcodeFragmentActivity));
-                //intent.SetClassName("StockApp.StockApp", );
-                intent.PutExtra("AutoFocus", autoFocus.Checked);
-                intent.PutExtra("UseFlash", useFlash.Checked);
-
-                if (intent.ResolveActivity(Activity.PackageManager) != null)
-                {
-                    StartActivityForResult(intent, RC_BARCODE_CAPTURE);
-                }
+            StartActivityForResult(intent, RC_BARCODE_CAPTURE);
                 
-            }
+            
         }
 
         public override void OnActivityResult(int requestCode, int resultCode, Intent data)
@@ -75,13 +71,18 @@ namespace StockApp
 
             autoFocus = view.FindViewById(Resource.Id.auto_focus) as CompoundButton;
             useFlash = view.FindViewById(Resource.Id.use_flash) as CompoundButton;
-
-            view.FindViewById(Resource.Id.read_barcode).SetOnClickListener(this);
             btnReadBarcode = view.FindViewById(Resource.Id.read_barcode) as Button;
+
+            btnReadBarcode.Click += StartNewActivity;
 
 
 
             return view;
+        }
+
+        public override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
         }
 
         public static BarcodeFragment newInstance()
