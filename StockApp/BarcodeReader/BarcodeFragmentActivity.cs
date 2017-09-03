@@ -25,9 +25,10 @@ using Android.Support.V7.App;
 using Android.Support.Design.Widget;
 
 using StockApp.UI;
+using StockApp.BarcodeReader;
 
 
-namespace StockApp.BarcodeReader
+namespace StockApp
 {
     class BarcodeFragmentActivity : AppCompatActivity
     {

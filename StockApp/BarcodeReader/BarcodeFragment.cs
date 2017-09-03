@@ -19,7 +19,7 @@ using Android.Support.V4.View;
 using Android.Support.V4.App;
 using Android.Support.V7.App;
 
-namespace StockApp.BarcodeReader
+namespace StockApp
 {
     class BarcodeFragment : Android.Support.V4.App.Fragment, View.IOnClickListener
     {
@@ -39,8 +39,9 @@ namespace StockApp.BarcodeReader
         {
             if (v.Id == Resource.Id.read_barcode)
             {
-                Intent intent = new Intent();//("StockApp.StockApp", typeof(BarcodeFragmentActivity));
-                intent.SetClassName("StockApp.StockApp", "StockApp.StockApp.BarcodeReader.BarcodeFragmentActivity");
+
+                Intent intent = new Intent(Context.ApplicationContext,Activity.ClassLoader.LoadClass("barcodeFragmentActivity"));//("StockApp.StockApp", typeof(BarcodeFragmentActivity));
+                //intent.SetClassName("StockApp.StockApp", );
                 intent.PutExtra("AutoFocus", autoFocus.Checked);
                 intent.PutExtra("UseFlash", useFlash.Checked);
 
