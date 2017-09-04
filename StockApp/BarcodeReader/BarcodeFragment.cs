@@ -19,7 +19,7 @@ using Android.Support.V4.View;
 using Android.Support.V4.App;
 using Android.Support.V7.App;
 
-namespace StockApp
+namespace StockApp.BarcodeReader
 {
     class BarcodeFragment : Android.Support.V4.App.Fragment
     { 
