@@ -25,6 +25,7 @@ using Android.Support.V7.App;
 using Android.Support.Design.Widget;
 
 using StockApp.UI;
+using Android.Util;
 
 namespace StockApp.BarcodeReader
 {
@@ -39,7 +40,6 @@ namespace StockApp.BarcodeReader
         public static string UseFlash = "UseFlash";
         public static string BarcodeObject = "Barcode";
 
-
         private CameraSourcePreview<BarcodeGraphic> mPreview;
         private Android.Gms.Vision.CameraSource mCameraSource;
         private GraphicOverlay<BarcodeGraphic> mGraphicOverlay;
@@ -50,11 +50,22 @@ namespace StockApp.BarcodeReader
         private View layout;
         private static BarcodeFragmentActivity thisInstance;
 
+        public override View OnCreateView(View parent, string name, Context context, IAttributeSet attrs)
+        {
+            return base.OnCreateView(parent, name, context, attrs);
+        }
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            thisInstance = this;
             base.OnCreate(savedInstanceState);
+
+            thisInstance = this;
+
             SetContentView(Resource.Layout.Barcode_Capture);
+
+            //LayoutInflater inflater = LayoutInflater.From(this);
+            //ViewGroup viewGroup = (ViewGroup)FindViewById(Resource.Id.preview);
+            //View child = inflater.Inflate(Resource.Layout.layout1, viewGroup, true);
 
             mPreview = (CameraSourcePreview<BarcodeGraphic>)FindViewById(Resource.Id.preview);
             mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>)FindViewById(Resource.Id.graphicOverlay);

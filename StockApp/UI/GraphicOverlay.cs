@@ -17,6 +17,7 @@ using Java.Util;
 
 namespace StockApp.UI
 {
+    [Register("stockapp.stockapp.ui.GraphicOverlay")]
     class GraphicOverlay<T> : View where T: GraphicOverlay<T>.Graphic
     {
         public T tT ;

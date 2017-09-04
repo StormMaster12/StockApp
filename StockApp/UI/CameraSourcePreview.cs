@@ -19,6 +19,7 @@ using Android.Graphics;
 
 namespace StockApp.UI
 {
+    [Register("stockapp.stockapp.ui.CameraSourcePreview")]
     class CameraSourcePreview<T> : ViewGroup where T : GraphicOverlay<T>.Graphic
     {
         private static string TAG = "CameraSourcePreview";
@@ -32,11 +33,9 @@ namespace StockApp.UI
         private GraphicOverlay<T> mOverlay;
 
         private static CameraSourcePreview<T> Instance { get; set; }
-        
+
         public CameraSourcePreview(Context context, IAttributeSet attrs) : base(context,attrs)
         {
-            Instance = this;
-
             mContext = context;
             mStartRequested = false;
             mSurfaceAvaialbe = false;
