@@ -41,7 +41,7 @@ namespace StockApp.UI
             }
         }
 
-        public void Add(T graphic)
+        public void Add(Graphic graphic)
         {
             lock(mLock)
             {
