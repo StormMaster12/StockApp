@@ -17,17 +17,15 @@ using StockApp.UI;
 
 namespace StockApp.BarcodeReader
 {
-    class BarcodeTrackerFactory : MultiProcessor.IFactory
+    class BarcodeTrackerFactory : Java.Lang.Object, MultiProcessor.IFactory
     {
-        private GraphicOverlay<BarcodeGraphic> mgraphicOverlay;
+        private GraphicOverlay mgraphicOverlay;
 
 
-        public BarcodeTrackerFactory(GraphicOverlay<BarcodeGraphic> graphicOverlay)
+        public BarcodeTrackerFactory(GraphicOverlay graphicOverlay)
         {
             mgraphicOverlay = graphicOverlay;
         }
-
-        public IntPtr Handle => throw new NotImplementedException();
 
         public Tracker Create(Java.Lang.Object obj)
         {
@@ -35,8 +33,5 @@ namespace StockApp.BarcodeReader
             return new BacrodeGraphicTracker(mgraphicOverlay, graphic);
         }
 
-        public void Dispose()
-        {
-        }
     }
 }

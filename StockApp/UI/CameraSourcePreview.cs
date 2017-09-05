@@ -36,17 +36,16 @@ namespace StockApp.UI
 
         public CameraSourcePreview(Context context, IAttributeSet attrs) : base(context,attrs)
         {
+            Console.WriteLine("Main Constructor Started");
             mContext = context;
+
+            mSurfaceView = new SurfaceView(mContext);
+            SurfaceCallback instance = new SurfaceCallback();
+            mSurfaceView.Holder.AddCallback(instance);
+
             mStartRequested = false;
             mSurfaceAvaialbe = false;
-
-            SurfaceCallback instance = new SurfaceCallback();
-
-            mSurfaceView = new SurfaceView(context);
-            mSurfaceView.Holder.AddCallback(instance);
-            AddView(mSurfaceView);
         }
-
 
         public void start(Android.Gms.Vision.CameraSource cameraSource)
         {
@@ -60,13 +59,15 @@ namespace StockApp.UI
             if(mCameraSource != null)
             {
                 mStartRequested = true;
+                mSurfaceAvaialbe = true;
                 startIfReady();
             }
         }
 
-        public void start(Android.Gms.Vision.CameraSource cameraSource, GraphicOverlay<T> graphicOverlay)
+        public void start(Android.Gms.Vision.CameraSource cameraSource, GraphicOverlay graphicOverlay)
         {
             mOverlay = graphicOverlay;
+            release();
             start(cameraSource);
         }
 
@@ -106,7 +107,9 @@ namespace StockApp.UI
         {
             if (mStartRequested && mSurfaceAvaialbe)
             {
+                Console.Write("Before Camera Call, @110");
                 mCameraSource.Start(mSurfaceView.Holder);
+                Console.Write("After Camera Call, @112");
                 if (mOverlay != null)
                 {
                     Android.Gms.Common.Images.Size size = mCameraSource.PreviewSize;
@@ -129,12 +132,33 @@ namespace StockApp.UI
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
+            SurfaceCallback instance = new SurfaceCallback();
+
+            mSurfaceView = new SurfaceView(mContext);
+            
+            AddView(mSurfaceView);
+
+            mSurfaceView.Holder.AddCallback(instance);
+            if (mSurfaceView != null)
+            {
+                Console.WriteLine("MSurfaceView Is not null");
+            }
+            else
+            {
+                throw new Exception("Surface View Is Null");
+            }
+            //mCameraSource = new CameraSource(Context,holder);
+            Console.WriteLine("Drawing the Layout");
             int intWidth = 320;
             int intHeight = 240;
+
+            Console.WriteLine(mCameraSource);
 
             if(mCameraSource != null)
             {
                 Android.Gms.Common.Images.Size size = mCameraSource.PreviewSize;
+
+                Console.Write(size);
 
                 if(size != null)
                 {
@@ -168,8 +192,13 @@ namespace StockApp.UI
                 GetChildAt(i).Layout(0, 0, childWidth, childHeight);
             }
 
+            Console.WriteLine("Starting If Ready");
+
             try
             {
+                mStartRequested = true;
+                mSurfaceAvaialbe = true;
+
                 startIfReady();
             }
             catch (Exception e)
@@ -178,10 +207,13 @@ namespace StockApp.UI
             }
         }
 
-
-        private class SurfaceCallback : ISurfaceHolderCallback
+        private class SurfaceCallback :Java.Lang.Object, ISurfaceHolderCallback
         {
-            public IntPtr Handle => throw new NotImplementedException();
+            public SurfaceCallback()
+            {
+            }
+
+            //public IntPtr Handle => throw new NotImplementedException();
 
             public void Dispose()
             {

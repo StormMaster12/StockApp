@@ -59,7 +59,7 @@ namespace StockApp.UI
             PostInvalidate();
         }
 
-        public List<T> getGraphics()
+        public List<Graphic> getGraphics()
         {
             lock(mLock)
             {

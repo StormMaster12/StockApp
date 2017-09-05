@@ -40,9 +40,9 @@ namespace StockApp.BarcodeReader
         public static string UseFlash = "UseFlash";
         public static string BarcodeObject = "Barcode";
 
-        private CameraSourcePreview<BarcodeGraphic> mPreview;
+        private CameraSourcePreview mPreview;
         private Android.Gms.Vision.CameraSource mCameraSource;
-        private GraphicOverlay<BarcodeGraphic> mGraphicOverlay;
+        private GraphicOverlay mGraphicOverlay;
 
         private ScaleGestureDetector scaleGestureDetector;
         private GestureDetector getsureDetector;
@@ -60,35 +60,34 @@ namespace StockApp.BarcodeReader
             base.OnCreate(savedInstanceState);
 
             thisInstance = this;
-
             SetContentView(Resource.Layout.Barcode_Capture);
 
-            //LayoutInflater inflater = LayoutInflater.From(this);
-            //ViewGroup viewGroup = (ViewGroup)FindViewById(Resource.Id.preview);
-            //View child = inflater.Inflate(Resource.Layout.layout1, viewGroup, true);
-
-            mPreview = (CameraSourcePreview<BarcodeGraphic>)FindViewById(Resource.Id.preview);
-            mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>)FindViewById(Resource.Id.graphicOverlay);
+            mPreview = (CameraSourcePreview)FindViewById(Resource.Id.preview);
+            mGraphicOverlay = (GraphicOverlay)FindViewById(Resource.Id.graphicOverlay);
+            getsureDetector = new GestureDetector(this, new CaptureGestureListener());
+            scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
             bool autoFocus = Intent.GetBooleanExtra(AutoFocus, false);
             bool useFlash = Intent.GetBooleanExtra(UseFlash, false);
 
-            int rc = (int) ActivityCompat.CheckSelfPermission(this, Manifest.Permission.Camera);
-            if (rc == (int) Permission.Granted)
+            createCameraSource(autoFocus, useFlash);
+
+            int rc = (int)ActivityCompat.CheckSelfPermission(this, Manifest.Permission.Camera);
+            if (rc == (int)Permission.Granted)
             {
                 createCameraSource(autoFocus, useFlash);
             }
             else
             {
-                requestCameraPermission(); 
+                requestCameraPermission();
+
             }
-            
-            getsureDetector = new GestureDetector(this, new CaptureGestureListener());
         }
 
         private void requestCameraPermission()
         {
-            string[] permissions = new string[] { Manifest.Permission.CallPhone };
+            string[] permissions = new string[] { Manifest.Permission.Camera };
+            Console.WriteLine(ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.Camera));
             if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.Camera))
             {
                 
@@ -118,12 +117,12 @@ namespace StockApp.BarcodeReader
 
         private void createCameraSource(bool autoFocus, bool useFlash)
         {
-            Context context = ApplicationContext;
+            Console.WriteLine("Creating the camera source");
+            Context context = this;
 
             BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(context).Build();
             BarcodeTrackerFactory barcodeFactory = new BarcodeTrackerFactory(mGraphicOverlay);
-            barcodeDetector.SetProcessor(
-                new MultiProcessor.Builder(barcodeFactory).Build());
+            barcodeDetector.SetProcessor(new MultiProcessor.Builder(barcodeFactory).Build());
 
             if (!barcodeDetector.IsOperational)
             {
@@ -143,10 +142,7 @@ namespace StockApp.BarcodeReader
                 .SetAutoFocusEnabled(true);
 
             mCameraSource = builder.Build();
-                    
-
-
-         
+            startCameraSource();
         }
 
         private void startCameraSource()
@@ -163,6 +159,7 @@ namespace StockApp.BarcodeReader
             {
                 try
                 {
+                    Console.WriteLine("Starting the Camera Inside mPreview");
                     mPreview.start(mCameraSource, mGraphicOverlay);
                 }
                 catch (InvalidOperationException)
@@ -250,14 +247,8 @@ namespace StockApp.BarcodeReader
             }
         }
 
-        private class ScaleListener : ScaleGestureDetector.IOnScaleGestureListener
+        private class ScaleListener : Java.Lang.Object, ScaleGestureDetector.IOnScaleGestureListener
         {
-            public IntPtr Handle => throw new NotImplementedException();
-
-            public void Dispose()
-            {
-                throw new NotImplementedException();
-            }
 
             public bool OnScale(ScaleGestureDetector detector)
             {
@@ -273,6 +264,5 @@ namespace StockApp.BarcodeReader
             {
             }
         }
-
     }
 }
