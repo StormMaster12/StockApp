@@ -43,6 +43,8 @@ namespace StockApp.UI
             SurfaceCallback instance = new SurfaceCallback();
             mSurfaceView.Holder.AddCallback(instance);
 
+
+
             mStartRequested = false;
             mSurfaceAvaialbe = false;
         }
@@ -59,15 +61,14 @@ namespace StockApp.UI
             if(mCameraSource != null)
             {
                 mStartRequested = true;
-                mSurfaceAvaialbe = true;
                 startIfReady();
             }
         }
 
         public void start(Android.Gms.Vision.CameraSource cameraSource, GraphicOverlay graphicOverlay)
         {
+            mSurfaceAvaialbe = true;
             mOverlay = graphicOverlay;
-            release();
             start(cameraSource);
         }
 
@@ -105,11 +106,14 @@ namespace StockApp.UI
 
         private void startIfReady()
         {
+            Console.WriteLine("mStartRequested : {0} , mSurfaceAvailabe : {1}", mStartRequested, mSurfaceAvaialbe);
+
             if (mStartRequested && mSurfaceAvaialbe)
             {
-                Console.Write("Before Camera Call, @110");
+                Console.WriteLine("Before Camera Call, @110");
                 mCameraSource.Start(mSurfaceView.Holder);
-                Console.Write("After Camera Call, @112");
+                Console.WriteLine("After Camera Call, @112");
+                throw new Exception("need an error");
                 if (mOverlay != null)
                 {
                     Android.Gms.Common.Images.Size size = mCameraSource.PreviewSize;
@@ -132,13 +136,8 @@ namespace StockApp.UI
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
-            SurfaceCallback instance = new SurfaceCallback();
 
-            mSurfaceView = new SurfaceView(mContext);
-            
             AddView(mSurfaceView);
-
-            mSurfaceView.Holder.AddCallback(instance);
             if (mSurfaceView != null)
             {
                 Console.WriteLine("MSurfaceView Is not null");
@@ -196,9 +195,6 @@ namespace StockApp.UI
 
             try
             {
-                mStartRequested = true;
-                mSurfaceAvaialbe = true;
-
                 startIfReady();
             }
             catch (Exception e)

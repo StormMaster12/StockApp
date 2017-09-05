@@ -142,7 +142,7 @@ namespace StockApp.BarcodeReader
                 .SetAutoFocusEnabled(true);
 
             mCameraSource = builder.Build();
-            startCameraSource();
+            //startCameraSource();
         }
 
         private void startCameraSource()
@@ -218,6 +218,7 @@ namespace StockApp.BarcodeReader
         protected override void OnResume()
         {
             base.OnResume();
+            Console.WriteLine("We have resumed");
             startCameraSource();
         }
 
