@@ -16,7 +16,7 @@ using StockApp.UI;
 
 namespace StockApp.BarcodeReader
 {
-    class BarcodeGraphic : GraphicOverlay<BarcodeGraphic>.Graphic
+    class BarcodeGraphic : GraphicOverlay.Graphic
     {
         public int mId { get; set; }
 
@@ -27,7 +27,7 @@ namespace StockApp.BarcodeReader
         private Paint mTextPaint;
         private volatile Barcode mbarcode;
 
-        public BarcodeGraphic(GraphicOverlay<BarcodeGraphic> overlay) : base(overlay)
+        public BarcodeGraphic(GraphicOverlay overlay) : base(overlay)
         {
             mCurrentColourIndex = (mCurrentColourIndex + 1) % ColourChoices.Length;
             int selectedColour = ColourChoices[mCurrentColourIndex];
