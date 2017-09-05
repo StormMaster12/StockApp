@@ -18,16 +18,15 @@ using Java.Util;
 namespace StockApp.UI
 {
     [Register("stockapp.stockapp.ui.GraphicOverlay")]
-    class GraphicOverlay<T> : View where T: GraphicOverlay<T>.Graphic
+    class GraphicOverlay : View
     {
-        public T tT ;
         private Object mLock = new object();
         private int mPreviewWidth { get; set; }
         private float mWidthScaleFactor { get; set; } = 1.0f;
         private int mPreviewHeight;
         private float mHeightScaleFactor { get; set; } = 1.0f;
         private int mFacing { get; set; } = (int)CameraFacing.Back;
-        private HashSet<T> mGraphics = new HashSet<T>();
+        private HashSet<GraphicOverlay.Graphic> mGraphics = new HashSet<GraphicOverlay.Graphic>();
 
         public GraphicOverlay(Context context, IAttributeSet attrs)
             : base(context, attrs)
@@ -51,7 +50,7 @@ namespace StockApp.UI
             PostInvalidate();
         }
 
-        public void Remove(T graphic)
+        public void Remove(Graphic graphic)
         {
             lock(mLock)
             {
@@ -100,8 +99,8 @@ namespace StockApp.UI
 
         public abstract class Graphic
         {
-            private GraphicOverlay<T> mOverlay;
-            public Graphic(GraphicOverlay<T> overlay)
+            private GraphicOverlay mOverlay;
+            public Graphic(GraphicOverlay overlay)
             {
                 mOverlay = overlay;
             }
