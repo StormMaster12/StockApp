@@ -22,4 +22,32 @@ using Android.Support.V7.App;
 
 namespace StockApp.StockItems
 {
+  class ItemsFragment : Android.Support.V4.App.Fragment
+  {
+    public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+      View view = inflater.Inflate(Resource.Layout.Fragment_ItemsMain, container, false);
+      
+      populateItems(view);
+      
+      return view;
+    }
+    
+    private void populateItems(View view)
+    {
+      //RequestQueue 
+    }
+    
+    
+    
+    
+    public static ItemsFragment newInstance()
+        {
+            ItemsFragment fragment = new ItemsFragment();
+            Bundle args = new Bundle();
+
+            fragment.Arguments = args;
+            return fragment;
+        }
+  }
 }
