@@ -4,7 +4,7 @@
 namespace StockApp.HTTP
 {
 
-  public class HttpGetRequest : AsyncTask <string, void, string>
+  public class HttpPost : AsyncTask <string, void, string>
   {
   
     public readonly string REQUEST_METHOD = "GET";
@@ -14,6 +14,11 @@ namespace StockApp.HTTP
     public MediaType JSON {get; private set } = MediaType.parse("application/json; charset=utf-8");
     
     OkHttpClient client = new OkHttpClient();
+    
+    public HttpPost()
+    {
+    }
+    
     
     private string post(string url, string json)
     {
