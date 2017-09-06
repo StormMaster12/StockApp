@@ -20,10 +20,16 @@ using Android.Support.V4.View;
 using Android.Support.V4.App;
 using Android.Support.V7.App;
 
+using StockApp.HTTP
+
 namespace StockApp.StockItems
 {
   class ItemsFragment : Android.Support.V4.App.Fragment
   {
+    private HttpPost getHttp;
+    private string[] strHttp = new string[8];
+    private string strResult;
+  
     public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
       View view = inflater.Inflate(Resource.Layout.Fragment_ItemsMain, container, false);
@@ -35,12 +41,14 @@ namespace StockApp.StockItems
     
     private void populateItems(View view)
     {
-      //RequestQueue 
+      strHttp[0] = "@string/webServerUrl";
+      strHttp[1] = "@string/getAll";
+      getHttp = new HttpPost();
+      
+      strResult = getHttp.execute(strHttp).get();
+      Console.WriteLine(strResult);
     }
-    
-    
-    
-    
+
     public static ItemsFragment newInstance()
         {
             ItemsFragment fragment = new ItemsFragment();
