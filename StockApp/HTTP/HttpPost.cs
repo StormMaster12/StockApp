@@ -34,7 +34,7 @@ namespace StockApp.HTTP
       }
       catch (exception as e)
       {
-        Console.writeLine(e.ToString());
+        Console.WriteLine(e.ToString());
       }
     }
     
@@ -53,7 +53,15 @@ namespace StockApp.HTTP
     protected override string doInBackground (params string[] strParams)
       {
         string strUrl = strParams[0];
-        string json = httpjson(strParams[1],strParams[2,strParams[3],strParams[4],strParams[5],strParams[6],strParams[7]);
+        
+        if(strParams[1] == "@string/getAll")
+        {
+          string json = httpjson(strParams[1])  
+        }
+        else
+        {
+          string json = httpjson(strParams[1],strParams[2,strParams[3],strParams[4],strParams[5],strParams[6],strParams[7]);
+        }
 
         URL myUrl = new URL(strUrl);
         string result = post(myUrll,json);
