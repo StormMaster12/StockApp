@@ -1,20 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 
-using Android.App;
 using Android.Content;
-using Android.OS;
 using Android.Runtime;
 using Android.Views;
-using Android.Widget;
-using Android.Gms.Vision;
 using Android.Util;
-using Android.Support.Annotation;
-using Android.Gms.Common.Images;
-using Android.Content.Res;
 using Android.Graphics;
 
 namespace StockApp.UI

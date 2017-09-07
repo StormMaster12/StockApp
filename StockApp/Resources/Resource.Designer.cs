@@ -3161,6 +3161,9 @@ namespace StockApp
 			// aapt resource value: 0x7f070023
 			public const int abc_toolbar_collapse_description = 2131165219;
 			
+			// aapt resource value: 0x7f070040
+			public const int addNew = 2131165248;
+			
 			// aapt resource value: 0x7f07003a
 			public const int app_name = 2131165242;
 			
@@ -3228,7 +3231,10 @@ namespace StockApp
 			public const int common_signin_button_text_long = 2131165200;
 			
 			// aapt resource value: 0x7f07003e
-			public const int lorem_ipsum = 2131165246;
+			public const int getAll = 2131165246;
+			
+			// aapt resource value: 0x7f07003f
+			public const int getSpecific = 2131165247;
 			
 			// aapt resource value: 0x7f070035
 			public const int password_toggle_content_description = 2131165237;
@@ -3256,6 +3262,9 @@ namespace StockApp
 			
 			// aapt resource value: 0x7f07003d
 			public const int use_flash = 2131165245;
+			
+			// aapt resource value: 0x7f070041
+			public const int webServerUrl = 2131165249;
 			
 			static String()
 			{
