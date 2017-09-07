@@ -392,7 +392,6 @@ namespace StockApp.UI
 
         private CameraSource() { }
 
-
         private class CameraAutoFocusCallback : Java.Lang.Object, Android.Hardware.Camera.IAutoFocusCallback
         {
             public AutoFocusCallback mDelegate;
@@ -704,6 +703,23 @@ namespace StockApp.UI
             return selectedFpsRange;
         }
 
+		private byte[] createPreviewBuffer(Size previewSize)
+		{
+			int bitsPerPixel = ImageFormat.getBitsPerPixel(ImageFormat.NV21);
+			long sizeInBits = previewSize.getHeight() * previewSize.getWidth() * bitsPerPixel;
+			int bufferSize = (int)System.Math.Ceil(sizeInBits/8.0d) + 1;
+			
+			byte[] byteArray = new byte[bufferSize];
+			ByteBuffer buffer = ByteBuffer.wrap(byteArray);
+			if(!buffer.hasarray() || buffer.array() != byteArray)
+			{
+				throw new IllegalStateException("Failed to create valid buffer for camera source.");
+			}
+			
+			mBytesToByteBuffer.put(byteArray, buffer);
+			return byteArray;
+		}
+		
         private class CameraPreviewCallback : Java.Lang.Object, Android.Hardware.Camera.IPreviewCallback
         {
             public void OnPreviewFrame(byte[] data, Android.Hardware.Camera camera)
@@ -711,13 +727,106 @@ namespace StockApp.UI
                 mFrameProcessor.setNextFrame(data, camera);
             }
         }
-
+		
         private class FrameProcessingRunnable : Java.Lang.Object, IRunnable
         {
+			private Detector mDetector;
+			private long mStartTimeMillis = SystemClock.elapsedRealtime():
+			private object mLock = new object();
+			private bool mActive = true;
+			private long mPendingTimeMillis;
+			private int mPendingFrameId = 0;
+			private ByteBuffer mPendingFrameData;
+			
+			public FrameProcessingRunnable(Detector detector)
+			{
+				mDetector = detector;
+			}
+			
+			public void release()
+			{
+				assert(mProcessingThread.getState() == State.TERMINATED);
+				mDetector.release();
+				mDetector = null;
+			}
+			
+			private void setActive(bool active)
+			{
+				lock(mLock)
+				{
+					mActive = active
+					mLock.notifyAll();
+				}
+			}
+			
+			private void setNextFrame(byte[] data, Android.Hardware.Camera camera)
+			{
+				lock(mLock)
+				{
+					if(mPendingFrameData != null)
+					{
+						camera.addCallbackBuffer(mPendingFrameData.array());
+						mPendingFrameData = null;
+					}
+					
+					if (!mBytesToByteBuffer.containsKey(data))
+					{
+						Log.Debug("Skipping Frame, Could not Find ByteBuffer Associated with image");
+						return
+					}
+					
+					mPendingTimeMillis = SystemClock.elapsedRealtime() - mStartTimeMillis;
+					mPendingFrameId ++;
+					mLock.notifyAll();
+			
             public void Run()
             {
-                throw new NotImplementedException();
-            }
+                Frame outputFrame;
+				ByteBuffer data;
+				
+				while (true)
+				{
+					lock(mLock)
+					{
+						while(mActive && mPendingFrameData == null)
+						{
+							try
+							{
+								mLock.wait();
+							{
+							catch (InterruptedException e)
+							{
+								Log.Debug(TAG, "Frame Processing Loop Terminated", e);
+								return;
+							}
+						}
+						
+						if(!mAcitve) { return; }
+						
+						outputFrame = new Frame.Builder().setImageData(mPendingFrameData, mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.NV21)
+														  .setId(mPendingFrameId)
+														  .setTimestamp(mPendingTimeMillis)
+														  .setRotation(mRotation)
+														  .build();
+														  
+						data = mPendingFrameData;
+						mPendingFrameData = null;
+					}
+					
+					try
+					{
+						mDetector.receiveFrame(outputFrame);
+					{
+					catch(Throwable t)
+					{
+						Log.Exception(TAG, "Exception thrown from Reciever", t);
+					}
+					finaly
+					{
+						mCamera.addCallBackBuffer(data.array);
+					}
+				}
+			}		
         }
     }
 }
