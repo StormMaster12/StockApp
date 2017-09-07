@@ -117,7 +117,10 @@
     <Compile Include="BarcodeReader\BarcodeTrackerFactory.cs" />
     <Compile Include="BarcodeReader\BacrodeGraphicTracker.cs" />
     <Compile Include="FlashDeck\FlashCardDeck.cs" />
+    <Compile Include="HTTP\HttpPost.cs" />
+	<Compile Include="StockItems\ItemsFragment.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="UI\CameraSource.cs" />
     <Compile Include="UI\CameraSourcePreview.cs" />
     <Compile Include="UI\GraphicOverlay.cs" />
     <Compile Include="ViewPagerAdapter.cs" />

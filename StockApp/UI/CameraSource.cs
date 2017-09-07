@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,7 +27,7 @@ namespace StockApp.UI
         public readonly static int CAMERA_FACING_BACK = (int)Android.Hardware.CameraFacing.Back;
 		public readonly static int CAMERA_FACING_FRONT = (int)Android.Hardware.CameraFacing.Front;
 
-        private readonly string TAG = "OpenCameraSource";
+        private static readonly string TAG = "OpenCameraSource";
 		
 		private readonly int DUMMY_TEXTURE_NAME = 100;
 		
@@ -37,8 +38,8 @@ namespace StockApp.UI
 		private static Android.Hardware.Camera mCamera;
 		
 		private int mFacing = CAMERA_FACING_BACK;
-		private int mRotation;
-		private Size mPreviewSize { get; set; }
+		private static int mRotation;
+		public static Size mPreviewSize { get; private set; }
 		
 		private float mRequestedFps = 30.0f;
 		private int mRequestedPreviewWidth = 1024;
@@ -47,14 +48,13 @@ namespace StockApp.UI
 		private string mFocusMode = null;
 		private string mFlashMode = null;
 		
-		private Thread mProcessingThread;
+		private static Java.Lang.Thread mProcessingThread;
 		private static FrameProcessingRunnable mFrameProcessor;
 
         private static SurfaceView mDummySurfaceView;
         private static SurfaceTexture mDummySurfaceTexture;
 
-
-        private Dictionary<byte[], ByteBuffer> mBytesToBuffer = new Dictionary<byte[], ByteBuffer>();
+        private static Dictionary<byte[], ByteBuffer> mBytesToByteBuffer = new Dictionary<byte[], ByteBuffer>();
 		
 		public class Builder
 		{
@@ -77,7 +77,7 @@ namespace StockApp.UI
 			mCameraSource.mContext = context;
 		  }
 		  
-		  public Builder setRequestdfps(float fps)
+		  public Builder setRequestedFps(float fps)
 		  {
 			mCameraSource.mRequestedFps = fps;
 			return this;
@@ -122,7 +122,7 @@ namespace StockApp.UI
 		  
 		  public CameraSource build()
 		  {
-			mCameraSource.mFrameProcessor = mCameraSource.new FrameProcessingRunnable(mDetector);
+			mFrameProcessor = new FrameProcessingRunnable(mDetector);
 			return mCameraSource;
 		  }
 		}
@@ -159,14 +159,14 @@ namespace StockApp.UI
 				}
 				mCamera.StartPreview();
 				
-				mProcessingThread = new Thread(mFrameProcessor);
-				mFrameProcessor.Active = true;
+				mProcessingThread = new Java.Lang.Thread(mFrameProcessor);
+				mFrameProcessor.setActive(true);
 				mProcessingThread.Start();
 			}
 			return this;
 		}
 		
-		public CameraSource start(SurfaceHolder surfaceHolder)
+		public CameraSource start(ISurfaceHolder surfaceHolder)
 		{
 			lock(mCameraLock)
 			{
@@ -179,8 +179,8 @@ namespace StockApp.UI
 				mCamera.SetPreviewDisplay(surfaceHolder);
 				mCamera.StartPreview();
 				
-				mProcessingThread = new Thread(mFrameProcessor);
-				mFrameProcessor.Active = true;
+				mProcessingThread = new Java.Lang.Thread(mFrameProcessor);
+				mFrameProcessor.setActive(true);
 				mProcessingThread.Start();
 			}
 			return this;
@@ -190,7 +190,7 @@ namespace StockApp.UI
 		{
 			lock(mCameraLock)
 			{
-				mFrameProcessor.Active = false;
+				mFrameProcessor.setActive(false);
 				if(mProcessingThread != null)
 				{
 					try
@@ -204,7 +204,7 @@ namespace StockApp.UI
 					mProcessingThread = null;
 				}
 
-                mBytesToBuffer.Clear();
+                mBytesToByteBuffer.Clear();
 				
 				if(mCamera != null)
 				{
@@ -224,7 +224,7 @@ namespace StockApp.UI
                     }
                     catch (System.Exception e)
                     {
-                        Log.e(TAG, "Failed to clear camera preview: " + e);
+                        Log.Error(TAG, "Failed to clear camera preview: " + e);
                     }
 					mCamera.Release();
 					mCamera = null;
@@ -378,13 +378,13 @@ namespace StockApp.UI
             {
                 if(mCamera != null)
                 {
-                    CameraAutoFocusCallback autoFocusCallback = false;
+                    CameraAutoFocusCallback autoFocusCallback = null;
                     if(cb != null)
                     {
                         autoFocusCallback = new CameraAutoFocusCallback();
                         autoFocusCallback.mDelegate = cb;
                     }
-                    mCamera.SetAutoFocusMoveCallback(autoFocusCallback);
+                    mCamera.SetAutoFocusMoveCallback((Android.Hardware.Camera.IAutoFocusMoveCallback)autoFocusCallback);
                 }
             }
             return true;
@@ -492,6 +492,7 @@ namespace StockApp.UI
             {
                 parameters.SetPictureSize(pictureSize.Width, pictureSize.Height);
             }
+            parameters.SetPreviewSize(mPreviewSize.Width, mPreviewSize.Height);
             parameters.SetPreviewFpsRange(previewfpsRange[(int)Android.Hardware.Camera.Parameters.PreviewFpsMinIndex],
                                           previewfpsRange[(int)Android.Hardware.Camera.Parameters.PreviewFpsMaxIndex]);
             parameters.PreviewFormat = ImageFormatType.Nv21;
@@ -578,8 +579,8 @@ namespace StockApp.UI
         private List<SizePair> generateVaildPreviewSizeList(Android.Hardware.Camera camera)
         {
             var parameters = camera.GetParameters();
-            List<Android.Hardware.Camera.Size> supportedPreviewSizes = (List<Android.Hardware.Camera.Size>)parameters.SupportedPreviewSizes;
-            List<Android.Hardware.Camera.Size> supportedPictureSizes = (List<Android.Hardware.Camera.Size>)parameters.SupportedPictureSizes;
+            IList<Android.Hardware.Camera.Size> supportedPreviewSizes = parameters.SupportedPreviewSizes;
+            IList<Android.Hardware.Camera.Size> supportedPictureSizes = parameters.SupportedPictureSizes;
             List<SizePair> validPreviewSizes = new List<SizePair>();
 
             foreach (Android.Hardware.Camera.Size previewSize in supportedPreviewSizes)
@@ -637,7 +638,7 @@ namespace StockApp.UI
 
         private void setRotation(Android.Hardware.Camera camera, Android.Hardware.Camera.Parameters parameters, int cameraId )
         {
-            IWindowManager windowManager = (IWindowManager)mContext.GetSystemService(Context.WindowService);
+            IWindowManager windowManager = mContext.GetSystemService(Context.WindowService).JavaCast<IWindowManager>(); ;
             int degrees = 0;
             int rotation = (int)windowManager.DefaultDisplay.Rotation;
 
@@ -687,7 +688,7 @@ namespace StockApp.UI
 
             int[] selectedFpsRange = null;
             int minDiff = int.MaxValue;
-            List<int[]> previewFpsRangeList = (List<int[]>) camera.GetParameters().SupportedPreviewFpsRange;
+            IList<int[]> previewFpsRangeList = camera.GetParameters().SupportedPreviewFpsRange;
 
             foreach (int[] range in previewFpsRangeList)
             {
@@ -705,19 +706,27 @@ namespace StockApp.UI
 
 		private byte[] createPreviewBuffer(Size previewSize)
 		{
-			int bitsPerPixel = ImageFormat.getBitsPerPixel(ImageFormat.NV21);
-			long sizeInBits = previewSize.getHeight() * previewSize.getWidth() * bitsPerPixel;
-			int bufferSize = (int)System.Math.Ceil(sizeInBits/8.0d) + 1;
+		    int bitsPerPixel = ImageFormat.GetBitsPerPixel(ImageFormatType.Nv21);
+			long sizeInBits = previewSize.Height * previewSize.Width * bitsPerPixel;
+			int bufferSize = (int)System.Math.Ceiling(sizeInBits/8.0d) + 1;
 			
 			byte[] byteArray = new byte[bufferSize];
-			ByteBuffer buffer = ByteBuffer.wrap(byteArray);
-			if(!buffer.hasarray() || buffer.array() != byteArray)
+			ByteBuffer buffer = ByteBuffer.Wrap(byteArray);
+			if(!buffer.HasArray)
 			{
 				throw new IllegalStateException("Failed to create valid buffer for camera source.");
 			}
-			
-			mBytesToByteBuffer.put(byteArray, buffer);
-			return byteArray;
+
+            Console.WriteLine("--------- Preview Buffer ----------");
+            Console.WriteLine(previewSize);
+            
+
+            mBytesToByteBuffer.Add(byteArray, buffer);
+
+            Console.WriteLine(mBytesToByteBuffer);
+            Console.WriteLine(byteArray);
+            Console.WriteLine("--------- End ---------------");
+            return byteArray;
 		}
 		
         private class CameraPreviewCallback : Java.Lang.Object, Android.Hardware.Camera.IPreviewCallback
@@ -731,8 +740,8 @@ namespace StockApp.UI
         private class FrameProcessingRunnable : Java.Lang.Object, IRunnable
         {
 			private Detector mDetector;
-			private long mStartTimeMillis = SystemClock.elapsedRealtime():
-			private object mLock = new object();
+            private long mStartTimeMillis = SystemClock.ElapsedRealtime();
+            private static System.Object mLock = new System.Object(); // = new Java.Lang.Object;
 			private bool mActive = true;
 			private long mPendingTimeMillis;
 			private int mPendingFrameId = 0;
@@ -745,42 +754,44 @@ namespace StockApp.UI
 			
 			public void release()
 			{
-				assert(mProcessingThread.getState() == State.TERMINATED);
-				mDetector.release();
+				mDetector.Release();
 				mDetector = null;
 			}
 			
-			private void setActive(bool active)
+			public void setActive(bool active)
 			{
 				lock(mLock)
 				{
-					mActive = active
-					mLock.notifyAll();
-				}
+                    mActive = active;
+                    Monitor.PulseAll(mLock);
+                }
 			}
-			
-			private void setNextFrame(byte[] data, Android.Hardware.Camera camera)
-			{
-				lock(mLock)
-				{
-					if(mPendingFrameData != null)
-					{
-						camera.addCallbackBuffer(mPendingFrameData.array());
-						mPendingFrameData = null;
-					}
-					
-					if (!mBytesToByteBuffer.containsKey(data))
-					{
-						Log.Debug("Skipping Frame, Could not Find ByteBuffer Associated with image");
-						return
-					}
-					
-					mPendingTimeMillis = SystemClock.elapsedRealtime() - mStartTimeMillis;
-					mPendingFrameId ++;
-					mLock.notifyAll();
+
+            public void setNextFrame(byte[] data, Android.Hardware.Camera camera)
+            {
+                lock (mLock)
+                {
+                    if (mPendingFrameData != null)
+                    {
+                        camera.AddCallbackBuffer(mPendingFrameData.ToArray<System.Byte>());
+                        mPendingFrameData = null;
+                    }
+                    if (!mBytesToByteBuffer.ContainsKey(data))
+                    {
+                        Log.Debug(TAG,"Skipping Frame, Could not Find ByteBuffer Associated with image");
+                        return;
+
+                    }
+                    mPendingTimeMillis = SystemClock.ElapsedRealtime() - mStartTimeMillis;
+                    mPendingFrameId++;
+                    mPendingFrameData = mBytesToByteBuffer[data];
+                    Monitor.PulseAll(mLock);
+                }
+            }
 			
             public void Run()
             {
+                Console.WriteLine("=========== Running =============");
                 Frame outputFrame;
 				ByteBuffer data;
 				
@@ -790,41 +801,43 @@ namespace StockApp.UI
 					{
 						while(mActive && mPendingFrameData == null)
 						{
-							try
-							{
-								mLock.wait();
-							{
-							catch (InterruptedException e)
-							{
-								Log.Debug(TAG, "Frame Processing Loop Terminated", e);
-								return;
-							}
+                            //try
+                            //{
+                            //    Monitor.Wait(mLock);
+                            //}
+                            //catch (InterruptedException e)
+                            //{
+                            //    Console.WriteLine(TAG + "Frame Processing Loop Terminated" + e.ToString());
+                            //    //return;
+                            //}
 						}
 						
-						if(!mAcitve) { return; }
+						//if(!mActive) { return; }
 						
-						outputFrame = new Frame.Builder().setImageData(mPendingFrameData, mPreviewSize.getWidth(), mPreviewSize.getHeight(), ImageFormat.NV21)
-														  .setId(mPendingFrameId)
-														  .setTimestamp(mPendingTimeMillis)
-														  .setRotation(mRotation)
-														  .build();
-														  
+						outputFrame = new Frame.Builder().SetImageData(mPendingFrameData, mPreviewSize.Width, mPreviewSize.Height, (int)ImageFormatType.Nv21)
+														  .SetId(mPendingFrameId)
+                                                          .SetTimestampMillis(mPendingTimeMillis)
+														  .SetRotation((Android.Gms.Vision.FrameRotation)mRotation)
+														  .Build();  
 						data = mPendingFrameData;
-						mPendingFrameData = null;
+
+                        Console.WriteLine(data);
+
+						//mPendingFrameData = null;
 					}
-					
-					try
-					{
-						mDetector.receiveFrame(outputFrame);
-					{
-					catch(Throwable t)
-					{
-						Log.Exception(TAG, "Exception thrown from Reciever", t);
-					}
-					finaly
-					{
-						mCamera.addCallBackBuffer(data.array);
-					}
+
+                    try
+                    {
+                        mDetector.ReceiveFrame(outputFrame);
+                    }
+                    catch (Throwable t)
+                    {
+                        Log.Debug(TAG, "Has Thrown an exception", t);
+                    }
+                    finally
+                    {
+                        mCamera.AddCallbackBuffer(data.ToArray<System.Byte>());
+                    }
 				}
 			}		
         }

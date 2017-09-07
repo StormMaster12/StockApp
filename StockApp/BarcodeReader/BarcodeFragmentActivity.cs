@@ -41,7 +41,7 @@ namespace StockApp.BarcodeReader
         public static string BarcodeObject = "Barcode";
 
         private CameraSourcePreview mPreview;
-        private Android.Gms.Vision.CameraSource mCameraSource;
+        private StockApp.UI.CameraSource mCameraSource;
         private GraphicOverlay mGraphicOverlay;
 
         private ScaleGestureDetector scaleGestureDetector;
@@ -135,13 +135,17 @@ namespace StockApp.BarcodeReader
                 }
             }
 
-            Android.Gms.Vision.CameraSource.Builder builder = new Android.Gms.Vision.CameraSource.Builder(base.ApplicationContext, barcodeDetector)
-                .SetFacing(Android.Gms.Vision.CameraFacing.Back)
-                .SetRequestedPreviewSize(1600, 1024)
-                .SetRequestedFps(15.0f)
-                .SetAutoFocusEnabled(true);
+            StockApp.UI.CameraSource.Builder builder = new StockApp.UI.CameraSource.Builder(base.ApplicationContext, barcodeDetector)
+                .setFacing(StockApp.UI.CameraSource.CAMERA_FACING_BACK)
+                .setRequestedPreviewSize(1600, 1024)
+                .setRequestedFps(15.0f);
 
-            mCameraSource = builder.Build();
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich)
+            { 
+                mCameraSource = builder.setFocusMode(autoFocus ? Camera.Parameters.FocusModeContinuousPicture : null).build();
+            }
+
+            mCameraSource = builder.setFlashMode(useFlash ? Camera.Parameters.FlashModeTorch : null).build();
             //startCameraSource();
         }
 
@@ -164,7 +168,7 @@ namespace StockApp.BarcodeReader
                 }
                 catch (InvalidOperationException)
                 {
-                    mCameraSource.Release();
+                    mCameraSource.release();
                     mCameraSource = null;
                 }
             }

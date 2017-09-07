@@ -18,7 +18,7 @@ namespace StockApp.UI
         public bool mStartRequested;
         private bool mSurfaceAvaialbe;
 
-        private Android.Gms.Vision.CameraSource mCameraSource;
+        private CameraSource mCameraSource;
         private GraphicOverlay mOverlay;
 
         private static CameraSourcePreview Instance { get; set; }
@@ -29,16 +29,18 @@ namespace StockApp.UI
             mContext = context;
 
             mSurfaceView = new SurfaceView(mContext);
+            AddView(mSurfaceView);
+
             SurfaceCallback instance = new SurfaceCallback();
             mSurfaceView.Holder.AddCallback(instance);
-
+            
 
 
             mStartRequested = false;
             mSurfaceAvaialbe = false;
         }
 
-        public void start(Android.Gms.Vision.CameraSource cameraSource)
+        public void start(CameraSource cameraSource)
         {
             if (cameraSource == null)
             {
@@ -54,7 +56,7 @@ namespace StockApp.UI
             }
         }
 
-        public void start(Android.Gms.Vision.CameraSource cameraSource, GraphicOverlay graphicOverlay)
+        public void start(CameraSource cameraSource, GraphicOverlay graphicOverlay)
         {
             mSurfaceAvaialbe = true;
             mOverlay = graphicOverlay;
@@ -65,7 +67,7 @@ namespace StockApp.UI
         {
             if(mCameraSource != null)
             {
-                mCameraSource.Stop();
+                mCameraSource.stop();
             }
         }
 
@@ -73,7 +75,7 @@ namespace StockApp.UI
         {
             if(mCameraSource != null)
             {
-                mCameraSource.Release();
+                mCameraSource.release();
                 mCameraSource = null;
             }
         }
@@ -97,27 +99,27 @@ namespace StockApp.UI
         {
             Console.WriteLine("mStartRequested : {0} , mSurfaceAvailabe : {1}", mStartRequested, mSurfaceAvaialbe);
 
+            mStartRequested = true;
             if (mStartRequested && mSurfaceAvaialbe)
             {
                 Console.WriteLine("Before Camera Call, @110");
-                mCameraSource.Start(mSurfaceView.Holder);
+                mCameraSource.start(mSurfaceView.Holder);
                 Console.WriteLine("After Camera Call, @112");
-                throw new Exception("need an error");
                 if (mOverlay != null)
                 {
-                    Android.Gms.Common.Images.Size size = mCameraSource.PreviewSize;
+                    Size size = CameraSource.mPreviewSize;
                     int min = Math.Min(size.Width, size.Height);
                     int max = Math.Max(size.Width, size.Width);
                     
                     if(isPortaitMode())
                     {
-                        mOverlay.setCameraInfo(min, max, (int)mCameraSource.CameraFacing);
+                        mOverlay.setCameraInfo(min, max, (int)mCameraSource.getCameraFacing());
                     }
                     else
                     {
-                        mOverlay.setCameraInfo(max, min, (int)mCameraSource.CameraFacing);
+                        mOverlay.setCameraInfo(max, min, (int)mCameraSource.getCameraFacing());
                     }
-                    mOverlay.Clear();
+                    //mOverlay.Clear();
                 }
                 mStartRequested = false;
             }
@@ -126,7 +128,7 @@ namespace StockApp.UI
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
 
-            AddView(mSurfaceView);
+            //AddView(mSurfaceView);
             if (mSurfaceView != null)
             {
                 Console.WriteLine("MSurfaceView Is not null");
@@ -144,7 +146,7 @@ namespace StockApp.UI
 
             if(mCameraSource != null)
             {
-                Android.Gms.Common.Images.Size size = mCameraSource.PreviewSize;
+                Size size = CameraSource.mPreviewSize;
 
                 Console.Write(size);
 
