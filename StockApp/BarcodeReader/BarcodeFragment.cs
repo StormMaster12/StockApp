@@ -40,7 +40,7 @@ namespace StockApp.BarcodeReader
             
             //Intent intent = new Intent(Context.ApplicationContext,Activity.ClassLoader.LoadClass("barcodeFragmentActivity"));//("StockApp.StockApp", typeof(BarcodeFragmentActivity));
             //intent.SetClassName("StockApp.StockApp", );
-            Intent intent = new Intent(this.Activity, typeof(BarcodeFragmentActivity));
+            Intent intent = new Intent(Activity.BaseContext, typeof(BarcodeFragmentActivity));
             intent.PutExtra("AutoFocus", autoFocus.Checked);
             intent.PutExtra("UseFlash", useFlash.Checked);
 
@@ -57,9 +57,25 @@ namespace StockApp.BarcodeReader
                 {
                     if(data != null)
                     {
-                      //  Barcode barcode = data.GetParcelableExtra(BarcodeFragmentActivity.BarcodeObject);
+                        Barcode barcode = (Barcode)data.GetParcelableExtra(BarcodeFragmentActivity.BarcodeObject);
+                        statusMessage.Text = "Barcode Success";
+                        barcodeValue.Text = (barcode.DisplayValue);
+                        Console.WriteLine("Barcode Read : " + barcode.DisplayValue.ToString());
+                    
+                    }
+                    else
+                    {
+                        statusMessage.Text = "Barcode Failed";
                     }
                 }
+                else
+                {
+                    statusMessage.Text = "Barcode Error";
+                }
+            }
+            else
+            {
+                base.OnActivityResult(requestCode, resultCode, data);
             }
         }
 

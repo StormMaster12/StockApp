@@ -41,7 +41,7 @@ namespace StockApp.BarcodeReader
         public static string BarcodeObject = "Barcode";
 
         private CameraSourcePreview mPreview;
-        private StockApp.UI.CameraSource mCameraSource;
+        private UI.CameraSource mCameraSource;
         private GraphicOverlay mGraphicOverlay;
 
         private ScaleGestureDetector scaleGestureDetector;
@@ -70,7 +70,7 @@ namespace StockApp.BarcodeReader
             bool autoFocus = Intent.GetBooleanExtra(AutoFocus, false);
             bool useFlash = Intent.GetBooleanExtra(UseFlash, false);
 
-            createCameraSource(autoFocus, useFlash);
+            //createCameraSource(autoFocus, useFlash);
 
             int rc = (int)ActivityCompat.CheckSelfPermission(this, Manifest.Permission.Camera);
             if (rc == (int)Permission.Granted)
@@ -146,7 +146,6 @@ namespace StockApp.BarcodeReader
             }
 
             mCameraSource = builder.setFlashMode(useFlash ? Camera.Parameters.FlashModeTorch : null).build();
-            //startCameraSource();
         }
 
         private void startCameraSource()
@@ -176,6 +175,7 @@ namespace StockApp.BarcodeReader
 
         private bool OnTap(float rawX, float rawY)
         {
+            Finish();
             int[] location = new int[2];
             mGraphicOverlay.GetLocationOnScreen(location);
             float x = (rawX - location[0]);

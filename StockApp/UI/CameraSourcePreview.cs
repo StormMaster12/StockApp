@@ -25,10 +25,11 @@ namespace StockApp.UI
 
         public CameraSourcePreview(Context context, IAttributeSet attrs) : base(context,attrs)
         {
+            
             Console.WriteLine("Main Constructor Started");
             mContext = context;
 
-            mSurfaceView = new SurfaceView(mContext);
+            mSurfaceView = new SurfaceView(context);
             AddView(mSurfaceView);
 
             SurfaceCallback instance = new SurfaceCallback();

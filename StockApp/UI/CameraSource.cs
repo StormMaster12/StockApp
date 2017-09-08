@@ -19,6 +19,8 @@ using Java.Lang;
 using Java.Nio;
 using Java;
 using Android.Hardware;
+using System.Collections.Concurrent;
+using System.IO;
 
 namespace StockApp.UI
 {
@@ -54,9 +56,14 @@ namespace StockApp.UI
         private static SurfaceView mDummySurfaceView;
         private static SurfaceTexture mDummySurfaceTexture;
 
-        private static Dictionary<byte[], ByteBuffer> mBytesToByteBuffer = new Dictionary<byte[], ByteBuffer>();
-		
-		public class Builder
+        private static ConcurrentDictionary<byte[], ByteBuffer> mBytesToByteBuffer = new ConcurrentDictionary<byte[], ByteBuffer>();
+        //private static var mBytesToByteBuffer = new Dictionary<byte[], ByteBuffer>();
+
+
+        //private static MemoryStream mBytesToByteBuffer = new MemoryStream();
+
+
+        public class Builder
 		{
           
 		  private Detector mDetector;
@@ -136,6 +143,7 @@ namespace StockApp.UI
 			}
 		}
 		
+        [RequiresPermission("Camera")]
 		public CameraSource start()
 		{
 			lock(mCameraLock)
@@ -146,18 +154,18 @@ namespace StockApp.UI
 				}
 			
 				mCamera = createCamera();
-				
-				if(Build.VERSION.SdkInt >= BuildVersionCodes.Honeycomb)
-				{
-					mDummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
-					mCamera.SetPreviewTexture(mDummySurfaceTexture);
-				}
-				else
-				{
-					mDummySurfaceView = new SurfaceView(mContext);
-					mCamera.SetPreviewDisplay( mDummySurfaceView.Holder);
-				}
-				mCamera.StartPreview();
+
+                if(Build.VERSION.SdkInt >= BuildVersionCodes.Honeycomb)
+                {
+                	mDummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
+                	mCamera.SetPreviewTexture(mDummySurfaceTexture);
+                }
+                else
+                {
+                mDummySurfaceView = new SurfaceView(mContext);
+                mCamera.SetPreviewDisplay(mDummySurfaceView.Holder);
+                }
+                mCamera.StartPreview();
 				
 				mProcessingThread = new Java.Lang.Thread(mFrameProcessor);
 				mFrameProcessor.setActive(true);
@@ -165,8 +173,9 @@ namespace StockApp.UI
 			}
 			return this;
 		}
-		
-		public CameraSource start(ISurfaceHolder surfaceHolder)
+
+        [RequiresPermission("Camera")]
+        public CameraSource start(ISurfaceHolder surfaceHolder)
 		{
 			lock(mCameraLock)
 			{
@@ -719,11 +728,11 @@ namespace StockApp.UI
 
             Console.WriteLine("--------- Preview Buffer ----------");
             Console.WriteLine(previewSize);
-            
 
-            mBytesToByteBuffer.Add(byteArray, buffer);
 
-            Console.WriteLine(mBytesToByteBuffer);
+            mBytesToByteBuffer[byteArray] = buffer; //(byteArray, buffer);
+
+            Console.WriteLine(mBytesToByteBuffer[byteArray]);
             Console.WriteLine(byteArray);
             Console.WriteLine("--------- End ---------------");
             return byteArray;
@@ -778,7 +787,7 @@ namespace StockApp.UI
                     }
                     if (!mBytesToByteBuffer.ContainsKey(data))
                     {
-                        Log.Debug(TAG,"Skipping Frame, Could not Find ByteBuffer Associated with image");
+                        Log.Debug(TAG, "Skipping Frame, Could not Find ByteBuffer Associated with image");
                         return;
 
                     }
@@ -801,18 +810,18 @@ namespace StockApp.UI
 					{
 						while(mActive && mPendingFrameData == null)
 						{
-                            //try
-                            //{
-                            //    Monitor.Wait(mLock);
-                            //}
-                            //catch (InterruptedException e)
-                            //{
-                            //    Console.WriteLine(TAG + "Frame Processing Loop Terminated" + e.ToString());
-                            //    //return;
-                            //}
-						}
+                            try
+                            {
+                                Monitor.Wait(mLock);
+                            }
+                            catch (InterruptedException e)
+                            {
+                                Console.WriteLine(TAG + "Frame Processing Loop Terminated" + e.ToString());
+                                return;
+                            }
+                        }
 						
-						//if(!mActive) { return; }
+						if(!mActive) { return; }
 						
 						outputFrame = new Frame.Builder().SetImageData(mPendingFrameData, mPreviewSize.Width, mPreviewSize.Height, (int)ImageFormatType.Nv21)
 														  .SetId(mPendingFrameId)
@@ -823,7 +832,7 @@ namespace StockApp.UI
 
                         Console.WriteLine(data);
 
-						//mPendingFrameData = null;
+						mPendingFrameData = null;
 					}
 
                     try

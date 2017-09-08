@@ -20,7 +20,7 @@ using Android.Support.V4.View;
 using Android.Support.V4.App;
 using Android.Support.V7.App;
 
-using StockApp.HTTP
+using StockApp.HTTP;
 
 namespace StockApp.StockItems
 {
@@ -45,7 +45,7 @@ namespace StockApp.StockItems
       strHttp[1] = "@string/getAll";
       getHttp = new HttpPost();
       
-      strResult = getHttp.execute(strHttp).get();
+      strResult = (string)getHttp.Execute(strHttp).Get();
       Console.WriteLine(strResult);
     }
 
