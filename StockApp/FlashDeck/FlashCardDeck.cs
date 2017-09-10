@@ -47,7 +47,8 @@ namespace StockApp
             new FlashCard { problem = "17 " + plus + " -1",
                             answer = "16" },
             new FlashCard { problem = "64 " + multiply + " 2",
-                            answer = "128" } 
+                            answer = "128" }, 
+            new FlashCard { problem = "12" + divide + "3", answer="4"}
         };
 
         // Array of flash cards that make up the flash card deck:

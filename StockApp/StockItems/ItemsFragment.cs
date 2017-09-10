@@ -41,8 +41,8 @@ namespace StockApp.StockItems
     
     private void populateItems(View view)
     {
-      strHttp[0] = "@string/webServerUrl";
-      strHttp[1] = "@string/getAll";
+      strHttp[0] =  GetString(Resource.String.webServerUrl);
+      strHttp[1] = GetString(Resource.String.getAll);
       getHttp = new HttpPost();
       
       strResult = (string)getHttp.Execute(strHttp).Get();

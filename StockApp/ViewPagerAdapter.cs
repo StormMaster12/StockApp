@@ -6,6 +6,7 @@ using Android.Support.V4.App;
 using Java.Lang;
 
 using StockApp.BarcodeReader;
+using StockApp.StockItems;
 
 namespace StockApp
 {
@@ -21,20 +22,25 @@ namespace StockApp
 
         public override int Count
         {
-            get { return flashCardDeck.NumCards + 1; }
+            get { return flashCardDeck.NumCards + 2; }
         }
 
         public override Android.Support.V4.App.Fragment GetItem(int position)
         {
-            if (position != (flashCardDeck.NumCards ))
+            if (position < 7)
             {
                 return (Android.Support.V4.App.Fragment)
                 ViewPagerFragment.newInstance(flashCardDeck[position].Problem, flashCardDeck[position].Answer);
             }
-            else
+            else if(position == 7)
             {
                 return BarcodeFragment.newInstance();
             }
+            else if(position == 8)
+            {
+                return ItemsFragment.newInstance();
+            }
+            return null;
             
         }
 

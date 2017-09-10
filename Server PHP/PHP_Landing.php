@@ -9,35 +9,34 @@
     
     $database = mysqli_select_db($connection, DB_DATABASE);
     
-    if (!isset($_POST)
-        {
-          echo "No Post Data";
-        }
+    if (isset($_POST)) {
+		
+	foreach ($_POST as $key => $value){
+	  echo "{$key} = {$value}\r\n";
+	}
+
          
     $request_Type = $_POST['requestType'];
     $table = $_POST['tableName'];
 
     VerifyTable($connection, DB_DATABASE,$table);
         
-    if ($request_Type == "getAll")
-        {
-          $result = mysqli_query($connection, "SELECT amount, expiryDate, Name FROM " . $table);
+    if ($request_Type == "getAll") {
+          $result = mysqli_query($connection, "SELECT amount, [Runout Date]	, Name FROM '$table' ") or die (mysqli_error($connection));
           sqlToJson($result);                                 
         }
-    elseif ($request_Type = "get")
-        {
-          $amount = $_POST['amount'];
+    elseif ($request_Type = "getSpecific") {
+          $amount = $_POST['Amount'];
           $expiryDate = $_POST['expiryDate'];
-          $Name = $_POST['name'];
+          $Name = $_POST['Name'];
           
           $result = mysqli_query($connection, "SELECT * FROM '$table' WHERE Amount = '$amount' AND ExpiryDate = '$expiryDate'
-                                              AND Name = '$Name'");
+                                              AND Name = '$Name'") or die (mysqli_error($connection));
           sqlToJson($result);
         }
-    elseif ($request_Type = "add")
-        {
-          $Name = $_POST['name'];
-          $Pan = $_POST['pan'];
+    elseif ($request_Type = "addProduct") {
+          $Name = $_POST['Name'];
+          $Pan = $_POST['Pan'];
           $Amount = $_POST['amount'];
           $shortDescription = $_POST['shortDescription'];
           $longDescription = $_POST['longDescription'];
@@ -46,10 +45,13 @@
           
           $query = mysqli_query($connection, "INSERT INTO '$table' (Name, Pan, Amount, shortDescription, longDescription, currentDate, expiryDate)
                                               Values ( '$Name','$Pan','$Amount','$shortDescription','$longDescription','$currentDate'
-                                              ,'$expiryDate')";
+                                              ,'$expiryDate')") or die (mysqli_error($connection));
         }
-        
-    
+    }
+	else {
+		echo "No Post Data Sent";
+	}
+	?>
   </body>
 </html>
 
@@ -69,8 +71,7 @@
         
   function VerifyTable($connection, $dbName,$table)
     {
-      if(!tableExists($table,$dbName,$connection)
-         {
+      if(!tableExists($table,$dbName,$connection)) {
            echo "Error Table: " . $table . " Does Not Exist.";
          }
     }
@@ -83,9 +84,8 @@
            $checkTable = mysqli_query($connection,
                                       "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_NAME = '$t'
                                       AND TABLE_SCHEMA = '$d'");
-           if (mysqli_num_rows($checktable) > 0) return true;
+           if (mysqli_num_rows($checkTable) > 0) return true;
            
            return false;
-         }
          }
   ?>

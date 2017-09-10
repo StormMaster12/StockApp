@@ -5,6 +5,11 @@ using Android.Media;
 using Android.Provider;
 using Android.OS;
 using Java.Net;
+using Android.Views;
+using Java.IO;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace StockApp.HTTP
 {
@@ -20,54 +25,115 @@ namespace StockApp.HTTP
         {
         }
 
-        private string createPost(URL url, string json)
+        protected string doHmtl(params string[] strParams)
         {
-            HttpPost newpost = new HttpPost();
+            string strUrl = strParams[0] + "Php_Landing.php";
+            string requestType = strParams[1];
+            string strResponse = "";
+            string strPost = "";
+
+            var strExemptions = new List<string> { "<html>", "<body>", "</body>" , "</html>" };
+            URL myUrl = new URL(strUrl);
+            HttpURLConnection uRLConnection = null;
+
             try
             {
-                newpost.createPost(url, json);
-                return newpost.Execute().GetResult();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-            return "";
-        }
+                uRLConnection = (HttpURLConnection)myUrl.OpenConnection();
+                uRLConnection.RequestMethod = "POST";
+                strPost += "requestType=" + requestType + "&";
+                strPost += "tableName=Stock" + "&";
+                uRLConnection.DoInput = true;
+                uRLConnection.DoOutput = true;
+                
 
-        private string httpjson(string requestType, int pan, int amount, DateTime currentDate, DateTime expiryDate,
-    string shortDescription, string longDescritption)
-        {
-            return "{ 'requestType' : '" + requestType + "',"
-            + "'pan' : '" + pan.ToString() + "',"
-            + "'amount' : '" + amount.ToString() + "',"
-            + "'shortDescription' : '" + shortDescription + "',"
-            + "'longDescription' : '" + longDescritption + "',"
-            + "'currentDate' : '" + currentDate.ToString("d") + "',"
-            + "'expiryDate' : '" + expiryDate.ToString("d") + "'}";
-        }
-
-        protected string doInBackground(params string[] strParams)
-        {
-            string strUrl = strParams[0];
-            string json;
-
-            if (strParams[1] == "@string/getAll")
-            {
-                for (int i =1; i< strParams.Length; i++)
+                if (requestType == "getSpecific")
                 {
-                    strParams[i] = "";
+                    strPost +="Name= " + strParams[2] + "&";
+                    strPost +="Pan= " + strParams[3] + "&";
+                    strPost += "Amount= " + strParams[4] + "&";
+                    strPost += "expiryDate= " + strParams[5] + "&";
+                    
                 }
-                json = httpjson(strParams[1], int.Parse(strParams[2]), int.Parse(strParams[3]), new DateTime(long.Parse(strParams[4])), new DateTime(long.Parse(strParams[5])), strParams[6], strParams[7]);
+                else if (requestType == "addProduct")
+                {
+                    strPost += "Name= " + strParams[2] + "&";
+                    strPost +="Pan= " +strParams[3] + "&";
+                    strPost += "Amount= " + strParams[4] + "&";
+                    strPost += "shortDescription= " + strParams[5] + "&";
+                    strPost += "longDescription= " + strParams[6] + "&";
+                    strPost += "currentDate= " + strParams[7] + "&";
+                    strPost += "expiryDate= " + strParams[8] + "&";
+                }
+    
+                OutputStream outputPost = new BufferedOutputStream(uRLConnection.OutputStream);
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(uRLConnection.OutputStream, "UTF-8"));
+
+                writer.Write(strPost);
+
+                writer.Flush();
+                writer.Close();
+                uRLConnection.OutputStream.Close();
+
+                System.Console.WriteLine("Output String : {0}" , outputPost.ToString());
+
+
+                int responseCode = (int)uRLConnection.ResponseCode;
+
+                if (responseCode == (int)HttpStatus.Ok)
+                {
+                    string line;
+
+                    BufferedReader br = new BufferedReader(new InputStreamReader(uRLConnection.InputStream));
+
+                    while((line = br.ReadLine()) != null)
+                    {
+                        line = Regex.Replace(line, @"\s", "");
+                        if (!strExemptions.Contains(line))
+                        {
+                            strResponse += line.Replace("</body>", "");
+                        }
+                        
+                    }
+                }
+                else
+                {
+                    strResponse = "Nothing Received";
+                }
+                strResponse = strResponse.Replace(@"\", "");
+                RootJson rootJson = JsonConvert.DeserializeObject<RootJson>(strResponse);
+
+                System.Console.WriteLine("-----------------------------------------------");
+                System.Console.WriteLine(strResponse);
+                System.Console.WriteLine(rootJson.Name);
+                System.Console.WriteLine(rootJson.Amount);
+                System.Console.WriteLine(rootJson.Pan);
+                System.Console.WriteLine(rootJson.Short_Description);
+                System.Console.WriteLine(rootJson.Long_Description);
+                System.Console.WriteLine(rootJson.purchaseDate);
+                System.Console.WriteLine(rootJson.expiryDate);
+
+
+
             }
-            else
+            catch(MalformedURLException error)
             {
-                json = httpjson(strParams[1], int.Parse(strParams[2]), int.Parse(strParams[3]), new DateTime(long.Parse(strParams[4])), new DateTime(long.Parse(strParams[5])), strParams[6], strParams[7]);
+                System.Console.WriteLine("Malformed URL: {0} ", error);
+            }
+            catch(SocketTimeoutException error)
+            {
+                System.Console.WriteLine("Socket Timeout: {0} ", error);
+            }
+            catch(Exception error)
+            {
+                System.Console.WriteLine("Error : {0}", error);
+            }
+            finally
+            {
+                uRLConnection.Disconnect();
             }
 
-            URL myUrl = new URL(strUrl);
-            string result = createPost(myUrl, json);
-            return result;
+            return strResponse;
+            
         }
 
         protected void onPostExecute(string result)
@@ -77,7 +143,7 @@ namespace StockApp.HTTP
 
         protected override string RunInBackground(params string[] @params)
         {
-            throw new NotImplementedException();
+            return doHmtl(@params);
         }
     }
 }
