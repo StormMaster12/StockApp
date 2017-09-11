@@ -99,7 +99,7 @@ namespace StockApp.HTTP
                 {
                     strResponse = "Nothing Received";
                 }
-                strResponse = strResponse.Replace(@"\", "");
+                strResponse = Regex.Unescape(strResponse);
                 RootJson rootJson = JsonConvert.DeserializeObject<RootJson>(strResponse);
 
                 System.Console.WriteLine("-----------------------------------------------");
