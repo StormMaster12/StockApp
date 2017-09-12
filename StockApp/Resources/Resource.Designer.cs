@@ -2285,6 +2285,33 @@ namespace StockApp
 		public partial class Id
 		{
 			
+			// aapt resource value: 0x7f0a00b1
+			public const int DetailedItemDescription = 2131361969;
+			
+			// aapt resource value: 0x7f0a00af
+			public const int DetailedItemImage = 2131361967;
+			
+			// aapt resource value: 0x7f0a00ae
+			public const int DetailedItemName = 2131361966;
+			
+			// aapt resource value: 0x7f0a00b0
+			public const int DetailedItemStatistics = 2131361968;
+			
+			// aapt resource value: 0x7f0a00b5
+			public const int ItemButton = 2131361973;
+			
+			// aapt resource value: 0x7f0a00b4
+			public const int ItemDescription = 2131361972;
+			
+			// aapt resource value: 0x7f0a00b3
+			public const int ItemImage = 2131361971;
+			
+			// aapt resource value: 0x7f0a00ad
+			public const int StockDetailed = 2131361965;
+			
+			// aapt resource value: 0x7f0a00ac
+			public const int StockItemOverview = 2131361964;
+			
 			// aapt resource value: 0x7f0a0098
 			public const int action0 = 2131361944;
 			
@@ -2492,6 +2519,9 @@ namespace StockApp
 			// aapt resource value: 0x7f0a007f
 			public const int graphicOverlay = 2131361919;
 			
+			// aapt resource value: 0x7f0a00b2
+			public const int gridLayout1 = 2131361970;
+			
 			// aapt resource value: 0x7f0a0005
 			public const int home = 2131361797;
 			
@@ -2543,8 +2573,8 @@ namespace StockApp
 			// aapt resource value: 0x7f0a004f
 			public const int list_item = 2131361871;
 			
-			// aapt resource value: 0x7f0a00ad
-			public const int masked = 2131361965;
+			// aapt resource value: 0x7f0a00b7
+			public const int masked = 2131361975;
 			
 			// aapt resource value: 0x7f0a009b
 			public const int media_actions = 2131361947;
@@ -2795,8 +2825,8 @@ namespace StockApp
 			// aapt resource value: 0x7f0a007c
 			public const int viewpager = 2131361916;
 			
-			// aapt resource value: 0x7f0a00ac
-			public const int visible = 2131361964;
+			// aapt resource value: 0x7f0a00b6
+			public const int visible = 2131361974;
 			
 			// aapt resource value: 0x7f0a0014
 			public const int wide = 2131361812;
@@ -3056,7 +3086,16 @@ namespace StockApp
 			public const int select_dialog_singlechoice_material = 2130903103;
 			
 			// aapt resource value: 0x7f030040
-			public const int support_simple_spinner_dropdown_item = 2130903104;
+			public const int StockItem__Overview = 2130903104;
+			
+			// aapt resource value: 0x7f030041
+			public const int StockItem_Detailed = 2130903105;
+			
+			// aapt resource value: 0x7f030042
+			public const int StockItem_Fragment = 2130903106;
+			
+			// aapt resource value: 0x7f030043
+			public const int support_simple_spinner_dropdown_item = 2130903107;
 			
 			static Layout()
 			{

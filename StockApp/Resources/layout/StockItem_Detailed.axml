@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/StockDetailed"
+    android:rowCount="3"
+    android:columnCount="2">
+  <TextView
+      android:text="Text"
+      android:id="@+id/DetailedItemName"
+      android:layout_marginRight="145.0dp"
+      android:layout_marginBottom="100.0dp"
+      android:layout_column="0"
+      android:layout_row="0"
+      android:layout_columnSpan="2"/>
+  
+  <ImageView
+      android:src="@android:drawable/ic_menu_gallery"
+      android:id="@+id/DetailedItemImage"
+      android:layout_marginRight="150.0dp"
+      android:layout_marginBottom="100.0dp"
+      android:layout_column="0"
+      android:layout_row="1" />
+  <TextView
+      android:text="Text"
+      android:id="@+id/DetailedItemStatistics"
+      android:layout_marginRight="145.0dp"
+      android:layout_marginBottom="100.0dp"
+      android:layout_column="1"
+      android:layout_row="1" />
+  <TextView
+    android:text="Text"
+    android:id="@+id/DetailedItemDescription"
+    android:layout_marginRight="145.0dp"
+    android:layout_marginBottom="100.0dp"
+    android:layout_column="0"
+    android:layout_row="2"
+    android:layout_columnSpan="2"/>
+
+</GridLayout>

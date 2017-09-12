@@ -18,6 +18,8 @@ namespace StockApp.HTTP
         public readonly string REQUEST_METHOD = "GET";
         public readonly int READ_TIMEOUT = 15000;
         public readonly int CONNECTION_TIMEOUT = 15000;
+        List<RootJson> rootJson = null;
+        public IActivityResponse activityResponse = null;
 
         public MediaType JSON { get; private set; }
 
@@ -25,7 +27,7 @@ namespace StockApp.HTTP
         {
         }
 
-        protected string doHmtl(params string[] strParams)
+        protected List<RootJson> doHmtl(params string[] strParams)
         {
             string strUrl = strParams[0] + "Php_Landing.php";
             string requestType = strParams[1];
@@ -35,6 +37,7 @@ namespace StockApp.HTTP
             var strExemptions = new List<string> { "<html>", "<body>", "</body>" , "</html>" };
             URL myUrl = new URL(strUrl);
             HttpURLConnection uRLConnection = null;
+            
 
             try
             {
@@ -100,17 +103,21 @@ namespace StockApp.HTTP
                     strResponse = "Nothing Received";
                 }
                 strResponse = Regex.Unescape(strResponse);
-                RootJson rootJson = JsonConvert.DeserializeObject<RootJson>(strResponse);
+                strResponse = strResponse.Replace(@"\", "");
+
+                rootJson = JsonConvert.DeserializeObject<List<RootJson>>(strResponse);
 
                 System.Console.WriteLine("-----------------------------------------------");
-                System.Console.WriteLine(strResponse);
-                System.Console.WriteLine(rootJson.Name);
-                System.Console.WriteLine(rootJson.Amount);
-                System.Console.WriteLine(rootJson.Pan);
-                System.Console.WriteLine(rootJson.Short_Description);
-                System.Console.WriteLine(rootJson.Long_Description);
-                System.Console.WriteLine(rootJson.purchaseDate);
-                System.Console.WriteLine(rootJson.expiryDate);
+
+                System.Console.WriteLine(rootJson[0].Name);
+                System.Console.WriteLine(rootJson[0].Amount);
+                System.Console.WriteLine(rootJson[0].Pan);
+                System.Console.WriteLine(rootJson[0].Short_Description);
+                System.Console.WriteLine(rootJson[0].Long_Description);
+                System.Console.WriteLine(rootJson[0].purchaseDate);
+                System.Console.WriteLine(rootJson[0].expiryDate);
+
+                System.Console.WriteLine("-----------------------------------------------");
 
 
 
@@ -132,18 +139,21 @@ namespace StockApp.HTTP
                 uRLConnection.Disconnect();
             }
 
-            return strResponse;
+            return rootJson;
             
         }
 
-        protected void onPostExecute(string result)
+        protected override void OnPostExecute(string result)
         {
+            activityResponse.proccessFinish(rootJson);
             base.OnPostExecute(result);
+            
         }
 
         protected override string RunInBackground(params string[] @params)
         {
-            return doHmtl(@params);
+            doHmtl(@params);
+            return "Completed";
         }
     }
 }

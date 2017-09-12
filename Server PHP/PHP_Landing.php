@@ -10,12 +10,7 @@
     $database = mysqli_select_db($connection, DB_DATABASE);
     
     if (isset($_POST)) {
-		
-	foreach ($_POST as $key => $value){
-	  echo "{$key} = {$value}\r\n";
-	}
-
-         
+		         
     $request_Type = $_POST['requestType'];
     $table = $_POST['tableName'];
 
@@ -60,7 +55,7 @@
   function sqlToJson($result)
         {
           $sqlRows = array();
-          while ($r = mysql_fetch_assoc($result))
+          while ($r = mysqli_fetch_assoc($result))
           {
             $rows[] = $r;
           }

@@ -123,8 +123,10 @@
     <Compile Include="BarcodeReader\BarcodeTrackerFactory.cs" />
     <Compile Include="BarcodeReader\BacrodeGraphicTracker.cs" />
     <Compile Include="FlashDeck\FlashCardDeck.cs" />
+    <Compile Include="HTTP\IActivityResponse.cs" />
     <Compile Include="HTTP\RootJson.cs" />
     <Compile Include="HTTP\HttpPost.cs" />
+    <Compile Include="StockItems\ItemsArrayAdapter.cs" />
     <Compile Include="StockItems\ItemsFragment.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="UI\CameraSource.cs" />
@@ -155,6 +157,12 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_ItemsMain.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\StockItem__Overview.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\StockItem_Fragment.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

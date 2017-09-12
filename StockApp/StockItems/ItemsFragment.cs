@@ -21,35 +21,46 @@ using Android.Support.V4.App;
 using Android.Support.V7.App;
 
 using StockApp.HTTP;
+using System.Collections;
 
 namespace StockApp.StockItems
 {
-  class ItemsFragment : Android.Support.V4.App.Fragment
-  {
-    private HttpPost getHttp;
-    private string[] strHttp = new string[8];
-    private string strResult;
-  
-    public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    class ItemsFragment : Android.Support.V4.App.Fragment, IActivityResponse
     {
-      View view = inflater.Inflate(Resource.Layout.Fragment_ItemsMain, container, false);
-      
-      populateItems(view);
-      
-      return view;
-    }
-    
-    private void populateItems(View view)
-    {
-      strHttp[0] =  GetString(Resource.String.webServerUrl);
-      strHttp[1] = GetString(Resource.String.getAll);
-      getHttp = new HttpPost();
-      
-      strResult = (string)getHttp.Execute(strHttp).Get();
-      Console.WriteLine(strResult);
-    }
+        private HttpPost getHttp = new HttpPost(); 
+        private string[] strHttp = new string[8];
+        private string strResult { get; set; }
+        private ListView lvStockItem { get; set; }
+        private List<RootJson> itemsResponse = new List<RootJson>();
+        private ItemsArrayAdapter ItemsArrayAdapter { get; set; }
+        private View view { get; set; }
 
-    public static ItemsFragment newInstance()
+
+        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
+            view = inflater.Inflate(Resource.Layout.StockItem__Overview, container, false);
+            lvStockItem = (ListView)view.FindViewById(Resource.Id.StockItemOverview);
+            ItemsArrayAdapter = new ItemsArrayAdapter(Activity, itemsResponse);
+
+            lvStockItem.Adapter = ItemsArrayAdapter;
+
+            getHttp.activityResponse = this;
+            populateItems(view);
+
+            return view;
+        }
+
+        private void populateItems(View view)
+        {
+            strHttp[0] = GetString(Resource.String.webServerUrl);
+            strHttp[1] = GetString(Resource.String.getAll);
+
+
+            getHttp.Execute(strHttp);
+            Console.WriteLine(strResult);
+        }
+
+        public static ItemsFragment newInstance()
         {
             ItemsFragment fragment = new ItemsFragment();
             Bundle args = new Bundle();
@@ -57,5 +68,15 @@ namespace StockApp.StockItems
             fragment.Arguments = args;
             return fragment;
         }
-  }
+
+
+        public void proccessFinish(List<RootJson> jsonList)
+        {
+            foreach(RootJson rootJson in jsonList)
+            {
+                ItemsArrayAdapter.Add(rootJson);
+            }
+            
+        }
+    }
 }

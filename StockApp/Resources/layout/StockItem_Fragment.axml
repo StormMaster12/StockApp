@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/gridLayout1"
+    android:rowCount="2"
+    android:columnCount="2">
+    <ImageView
+        android:src="@android:drawable/ic_menu_gallery"
+        android:id="@+id/ItemImage"
+        android:layout_marginRight="150.0dp"
+        android:layout_marginBottom="100.0dp"
+        android:layout_column="0"
+        android:layout_row="0" />
+    <TextView
+        android:text="Text"
+        android:id="@+id/ItemDescription"
+        android:layout_marginRight="145.0dp"
+        android:layout_marginBottom="100.0dp"
+        android:layout_column="1"
+        android:layout_row="0" />
+    <Button
+        android:text="Click To See More information on Item"
+        android:id="@+id/ItemButton"
+        android:layout_column="0"
+        android:layout_row="1"
+        android:layout_columnSpan="2" />
+</GridLayout>
