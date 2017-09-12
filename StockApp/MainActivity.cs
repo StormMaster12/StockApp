@@ -35,11 +35,8 @@ namespace StockApp
             // Set the content view from the "Main" layout resource:
             SetContentView(Resource.Layout.Activity_ScreenSlide);
 
-            // Instantiate the deck of flash cards:
-            FlashCardDeck flashCards = new FlashCardDeck();
-
             // Instantiate the adapter and pass in the deck of flash cards:
-            ViewPagerAdapter adapter = new ViewPagerAdapter(SupportFragmentManager, flashCards);
+            ViewPagerAdapter adapter = new ViewPagerAdapter(SupportFragmentManager);
 
             // Find the ViewPager and plug in the adapter:
 

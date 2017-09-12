@@ -12,31 +12,24 @@ namespace StockApp
 {
     class ViewPagerAdapter : FragmentPagerAdapter
     {
-        public FlashCardDeck flashCardDeck;
 
-        public ViewPagerAdapter(Android.Support.V4.App.FragmentManager fm, FlashCardDeck flashCards)
+        public ViewPagerAdapter(Android.Support.V4.App.FragmentManager fm)
             : base(fm)
         {
-            this.flashCardDeck = flashCards;
         }
 
         public override int Count
         {
-            get { return flashCardDeck.NumCards + 2; }
+            get { return 2; }
         }
 
         public override Android.Support.V4.App.Fragment GetItem(int position)
-        {
-            if (position < 7)
-            {
-                return (Android.Support.V4.App.Fragment)
-                ViewPagerFragment.newInstance(flashCardDeck[position].Problem, flashCardDeck[position].Answer);
-            }
-            else if(position == 7)
+        {   
+            if (position == 0)
             {
                 return BarcodeFragment.newInstance();
             }
-            else if(position == 8)
+            else if(position == 1)
             {
                 return ItemsFragment.newInstance();
             }
