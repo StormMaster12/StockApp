@@ -100,7 +100,7 @@ namespace StockApp.UI
         {
             Console.WriteLine("mStartRequested : {0} , mSurfaceAvailabe : {1}", mStartRequested, mSurfaceAvaialbe);
 
-            mStartRequested = true;
+            //mStartRequested = true;
             if (mStartRequested && mSurfaceAvaialbe)
             {
                 Console.WriteLine("Before Camera Call, @110");
