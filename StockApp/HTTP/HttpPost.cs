@@ -13,13 +13,13 @@ using System.Text.RegularExpressions;
 
 namespace StockApp.HTTP
 {
-    class HttpPost : AsyncTask<string, string , string>
+    class HttpPost<T> : AsyncTask<string, string , string> where T : RootJson
     {
         public readonly string REQUEST_METHOD = "GET";
         public readonly int READ_TIMEOUT = 15000;
         public readonly int CONNECTION_TIMEOUT = 15000;
-        List<RootJson> rootJson = null;
-        public IActivityResponse activityResponse = null;
+        List<T> rootJson = null;
+        public IActivityResponse<T> activityResponse = null;
 
         public MediaType JSON { get; private set; }
 
@@ -27,7 +27,7 @@ namespace StockApp.HTTP
         {
         }
 
-        protected List<RootJson> doHmtl(params string[] strParams)
+        protected List<T> doHmtl(params string[] strParams)
         {
             string strUrl = strParams[0] + "Php_Landing.php";
             string requestType = strParams[1];
@@ -37,7 +37,6 @@ namespace StockApp.HTTP
             var strExemptions = new List<string> { "<html>", "<body>", "</body>" , "</html>" };
             URL myUrl = new URL(strUrl);
             HttpURLConnection uRLConnection = null;
-            
 
             try
             {
@@ -51,10 +50,7 @@ namespace StockApp.HTTP
 
                 if (requestType == "getSpecific")
                 {
-                    strPost +="Name= " + strParams[2] + "&";
-                    strPost +="Pan= " + strParams[3] + "&";
-                    strPost += "Amount= " + strParams[4] + "&";
-                    strPost += "expiryDate= " + strParams[5] + "&";
+                    strPost += "Id= " + strParams[2] + "&"; 
                     
                 }
                 else if (requestType == "addProduct")
@@ -79,7 +75,6 @@ namespace StockApp.HTTP
 
                 System.Console.WriteLine("Output String : {0}" , outputPost.ToString());
 
-
                 int responseCode = (int)uRLConnection.ResponseCode;
 
                 if (responseCode == (int)HttpStatus.Ok)
@@ -95,7 +90,6 @@ namespace StockApp.HTTP
                         {
                             strResponse += line.Replace("</body>", "");
                         }
-                        
                     }
                 }
                 else
@@ -105,22 +99,7 @@ namespace StockApp.HTTP
                 strResponse = Regex.Unescape(strResponse);
                 strResponse = strResponse.Replace(@"\", "");
 
-                rootJson = JsonConvert.DeserializeObject<List<RootJson>>(strResponse);
-
-                System.Console.WriteLine("-----------------------------------------------");
-
-                System.Console.WriteLine(rootJson[0].Name);
-                System.Console.WriteLine(rootJson[0].Amount);
-                System.Console.WriteLine(rootJson[0].Pan);
-                System.Console.WriteLine(rootJson[0].Short_Description);
-                System.Console.WriteLine(rootJson[0].Long_Description);
-                System.Console.WriteLine(rootJson[0].purchaseDate);
-                System.Console.WriteLine(rootJson[0].expiryDate);
-
-                System.Console.WriteLine("-----------------------------------------------");
-
-
-
+                rootJson = JsonConvert.DeserializeObject<List<T>>(strResponse);
             }
             catch(MalformedURLException error)
             {

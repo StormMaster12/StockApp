@@ -122,9 +122,11 @@
     <Compile Include="BarcodeReader\BarcodeGraphic.cs" />
     <Compile Include="BarcodeReader\BarcodeTrackerFactory.cs" />
     <Compile Include="BarcodeReader\BacrodeGraphicTracker.cs" />
+    <Compile Include="HTTP\itemGeneralJson.cs" />
     <Compile Include="HTTP\IActivityResponse.cs" />
     <Compile Include="HTTP\RootJson.cs" />
     <Compile Include="HTTP\HttpPost.cs" />
+    <Compile Include="HTTP\itemSpecificJson.cs" />
     <Compile Include="StockItems\ItemsDetailedActivity.cs" />
     <Compile Include="StockItems\ItemsArrayAdapter.cs" />
     <Compile Include="StockItems\ItemsFragment.cs" />

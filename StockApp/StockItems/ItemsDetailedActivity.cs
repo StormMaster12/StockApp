@@ -1,4 +1,4 @@
-?using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,14 +15,15 @@ using StockApp.HTTP;
 namespace StockApp.StockItems
 {
     [Activity(Label = "Detailed Item Activity")]
-    class ItemsDetailedActivity : AppCompatActivity, IActivityResponse
+    class ItemsDetailedActivity : AppCompatActivity, IActivityResponse<itemSpecificJson>
     {
-        private List<RootJson> detailedList;
-		private HttpPost httpPost = new HttpPost();
+        private List<itemSpecificJson> detailedList;
+		private HttpPost<itemSpecificJson> httpPost = new HttpPost<itemSpecificJson>();
 		private TextView itemName;
 		private TextView itemStatistics;
 		private TextView itemDescription;
 		private ImageView itemImage;
+        private string[] strHttpList;
 		
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -30,7 +31,7 @@ namespace StockApp.StockItems
             SetContentView(Resource.Layout.StockItem_Detailed);
 
             Intent intent = Intent;
-            strHttpList =  intent.GetSerializableExtra("getSpecificList") as string[];
+            strHttpList =  intent.GetStringArrayExtra("getSpecificList");
 
             itemName = FindViewById(Resource.Id.DetailedItemName) as TextView;
             itemStatistics = FindViewById(Resource.Id.DetailedItemStatistics) as TextView;
@@ -47,13 +48,13 @@ namespace StockApp.StockItems
 
         }
 		
-		public void proccessFinish(List<RootJson> jsonList)
+		public void proccessFinish(List<itemSpecificJson> jsonList)
         {
-            RootJson item = jsonList[0];
+            itemSpecificJson item = jsonList[0];
 
-            itemName.Text = item.Name;
-            itemStatistics.Text = "Date Purchased : " + item.purchaseDate + "\n Expiry Date: " + item.expiryDate + "\n Amount Left: " + item.Amount + "\n Pan: " + item.Pan;
-            itemDescription.Text = "Short Description:\n " + item.Short_Description + "\n Long Description:\n " + item.Long_Description;
+            //itemName.Text = item.Name;
+            //itemStatistics.Text = "Date Purchased : " + item.purchaseDate + "\n Expiry Date: " + item.expiryDate + "\n Amount Left: " + item.Amount + "\n Pan: " + item.Pan;
+            //itemDescription.Text = "Short Description:\n " + item.Short_Description + "\n Long Description:\n " + item.Long_Description;
 			
 			httpPost.Cancel(true);
             

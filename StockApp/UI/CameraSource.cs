@@ -185,6 +185,7 @@ namespace StockApp.UI
 				}
 				
 				mCamera = createCamera();
+
 				mCamera.SetPreviewDisplay(surfaceHolder);
 				mCamera.StartPreview();
 				

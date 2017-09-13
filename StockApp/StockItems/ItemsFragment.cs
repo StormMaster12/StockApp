@@ -25,13 +25,13 @@ using System.Collections;
 
 namespace StockApp.StockItems
 {
-    class ItemsFragment : Android.Support.V4.App.Fragment, IActivityResponse
+    class ItemsFragment : Android.Support.V4.App.Fragment, IActivityResponse<itemGeneralJson>
     {
-        private HttpPost getHttp = new HttpPost(); 
+        private HttpPost<itemGeneralJson> getHttp = new HttpPost<itemGeneralJson>(); 
         private string[] strHttp = new string[8];
         private string strResult { get; set; }
         private ListView lvStockItem { get; set; }
-        private List<RootJson> itemsResponse = new List<RootJson>();
+        private List<itemGeneralJson> itemsResponse = new List<itemGeneralJson>();
         private ItemsArrayAdapter ItemsArrayAdapter { get; set; }
         private View view { get; set; }
 
@@ -70,9 +70,9 @@ namespace StockApp.StockItems
         }
 
 
-        public void proccessFinish(List<RootJson> jsonList)
+        public void proccessFinish(List<itemGeneralJson> jsonList)
         {
-            foreach(RootJson rootJson in jsonList)
+            foreach(itemGeneralJson rootJson in jsonList)
             {
                 ItemsArrayAdapter.Add(rootJson);
             }

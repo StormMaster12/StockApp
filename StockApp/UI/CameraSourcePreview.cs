@@ -8,8 +8,10 @@ using Android.Graphics;
 
 namespace StockApp.UI
 {
+    
     [Register("stockapp.stockapp.ui.CameraSourcePreview")]
-    class CameraSourcePreview : ViewGroup
+    
+    class CameraSourcePreview : ViewGroup, ISurfaceHolderCallback
     {
         private static string TAG = "CameraSourcePreview";
 
@@ -20,26 +22,26 @@ namespace StockApp.UI
 
         private CameraSource mCameraSource;
         private GraphicOverlay mOverlay;
+        private ISurfaceHolder surfaceHolder;
 
         private static CameraSourcePreview Instance { get; set; }
 
+        [RequiresPermission("Camera")]
         public CameraSourcePreview(Context context, IAttributeSet attrs) : base(context,attrs)
         {
             
             Console.WriteLine("Main Constructor Started");
             mContext = context;
-
-            mSurfaceView = new SurfaceView(context);
+            mSurfaceView = new SurfaceView(context);          
+            mSurfaceView.Holder.AddCallback(this);
+            mSurfaceView.Holder.SetType(SurfaceType.PushBuffers);
             AddView(mSurfaceView);
-
-            SurfaceCallback instance = new SurfaceCallback();
-            mSurfaceView.Holder.AddCallback(instance);
-            
 
 
             mStartRequested = false;
             mSurfaceAvaialbe = false;
         }
+
 
         public void start(CameraSource cameraSource)
         {
@@ -59,7 +61,6 @@ namespace StockApp.UI
 
         public void start(CameraSource cameraSource, GraphicOverlay graphicOverlay)
         {
-            mSurfaceAvaialbe = true;
             mOverlay = graphicOverlay;
             start(cameraSource);
         }
@@ -104,7 +105,7 @@ namespace StockApp.UI
             if (mStartRequested && mSurfaceAvaialbe)
             {
                 Console.WriteLine("Before Camera Call, @110");
-                mCameraSource.start(mSurfaceView.Holder);
+                mCameraSource.start(surfaceHolder);
                 Console.WriteLine("After Camera Call, @112");
                 if (mOverlay != null)
                 {
@@ -128,7 +129,7 @@ namespace StockApp.UI
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
-
+            
             //AddView(mSurfaceView);
             if (mSurfaceView != null)
             {
@@ -165,11 +166,11 @@ namespace StockApp.UI
                 intWidth = tmp;
             }
 
-            int layoutWidth =  l - r;
+            int layoutWidth =  r - l;
             int layoutHeight = t - b;
 
             int childWidth = layoutWidth;
-            int childHeight = (int)(((float)layoutWidth / (float) intHeight)*intWidth);
+            int childHeight = (int)(((float)layoutWidth / (float) intWidth)*intHeight);
 
             if (childHeight > layoutWidth)
             {
@@ -195,39 +196,57 @@ namespace StockApp.UI
             }
         }
 
-        private class SurfaceCallback :Java.Lang.Object, ISurfaceHolderCallback
+        public void SurfaceChanged(ISurfaceHolder holder, [GeneratedEnum] Format format, int width, int height)
         {
-            public SurfaceCallback()
+        }
+
+        public void SurfaceCreated(ISurfaceHolder holder)
+        {
+            surfaceHolder = holder;
+            mSurfaceAvaialbe = true;
+            try
             {
+                startIfReady();
             }
-
-            //public IntPtr Handle => throw new NotImplementedException();
-
-            public void Dispose()
+            catch (Exception e)
             {
-            }
-
-            public void SurfaceChanged(ISurfaceHolder holder, [GeneratedEnum] Format format, int width, int height)
-            {
-            }
-
-            public void SurfaceCreated(ISurfaceHolder holder)
-            {
-                Instance.mSurfaceAvaialbe = true;
-                try
-                {
-                    Instance.startIfReady(); 
-                }
-                catch (Exception e)
-                {
-                    Log.Debug("Something went wrong",e.ToString());
-                }
-            }
-
-            public void SurfaceDestroyed(ISurfaceHolder holder)
-            {
-                Instance.mSurfaceAvaialbe = false;
+                Log.Debug("Something went wrong", e.ToString());
             }
         }
+
+        public void SurfaceDestroyed(ISurfaceHolder holder)
+        {
+            mSurfaceAvaialbe = false;
+        }
+
+
+        //private class SurfaceCallback :Java.Lang.Object, ISurfaceHolderCallback
+        //{
+        //    public SurfaceCallback()
+        //    {
+        //    }
+
+        //    public void SurfaceChanged(ISurfaceHolder holder, [GeneratedEnum] Format format, int width, int height)
+        //    {
+        //    }
+
+        //    public void SurfaceCreated(ISurfaceHolder holder)
+        //    {
+        //        Instance.mSurfaceAvaialbe = true;
+        //        try
+        //        {
+        //            Instance.startIfReady(); 
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            Log.Debug("Something went wrong",e.ToString());
+        //        }
+        //    }
+
+        //    public void SurfaceDestroyed(ISurfaceHolder holder)
+        //    {
+        //        Instance.mSurfaceAvaialbe = false;
+        //    }
+        //}
     }
 }

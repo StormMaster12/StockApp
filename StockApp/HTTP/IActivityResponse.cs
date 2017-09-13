@@ -12,9 +12,9 @@ using Android.Widget;
 
 namespace StockApp.HTTP
 {
-    interface IActivityResponse
+    interface IActivityResponse<T> 
 
     {
-        void proccessFinish(List<RootJson> jsonList);
+        void proccessFinish(List<T> jsonList);
     }
 }
