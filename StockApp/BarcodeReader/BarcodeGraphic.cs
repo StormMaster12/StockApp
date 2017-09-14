@@ -53,22 +53,22 @@ namespace StockApp.BarcodeReader
             postInvalidate();
         }
 
-        public override void Draw(Canvas canvas)
-        {
-            Barcode barcode = mbarcode;
-            if(barcode == null)
-            {
-                return;
-            }
+        //public override void Draw(Canvas canvas)
+        //{
+        //    Barcode barcode = mbarcode;
+        //    if(barcode == null)
+        //    {
+        //        return;
+        //    }
 
-            RectF rect = new RectF(barcode.BoundingBox);
-            rect.Left = translateY(rect.Left);
-            rect.Right = translateY(rect.Right);
-            rect.Top = translateY(rect.Top);
-            rect.Bottom = translateY(rect.Bottom);
+        //    RectF rect = new RectF(barcode.BoundingBox);
+        //    rect.Left = translateY(rect.Left);
+        //    rect.Right = translateY(rect.Right);
+        //    rect.Top = translateY(rect.Top);
+        //    rect.Bottom = translateY(rect.Bottom);
 
-            canvas.DrawText(barcode.RawValue, rect.Left, rect.Bottom, mTextPaint);
-        }
+        //    canvas.DrawText(barcode.RawValue, rect.Left, rect.Bottom, mTextPaint);
+        //}
 
 
     }

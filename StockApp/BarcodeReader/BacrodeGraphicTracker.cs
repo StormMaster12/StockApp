@@ -20,9 +20,9 @@ namespace StockApp.BarcodeReader
     class BacrodeGraphicTracker : Tracker
     {
         private GraphicOverlay mOverlay;
-        private BarcodeGraphic mGraphic;
+        private GraphicOverlay.Graphic mGraphic;
 
-        public BacrodeGraphicTracker(GraphicOverlay overlay, BarcodeGraphic graphic)
+        public BacrodeGraphicTracker(GraphicOverlay overlay, GraphicOverlay.Graphic graphic)
         {
             mOverlay = overlay;
             mGraphic = graphic;

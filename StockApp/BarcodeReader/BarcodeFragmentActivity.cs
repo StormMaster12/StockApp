@@ -82,6 +82,8 @@ namespace StockApp.BarcodeReader
                 requestCameraPermission();
 
             }
+
+            Snackbar.Make(mGraphicOverlay, "Tap to capture. Pinch Strech to Zoom", Snackbar.LengthLong).Show();
         }
 
         private void requestCameraPermission()
@@ -184,7 +186,7 @@ namespace StockApp.BarcodeReader
             Barcode best = null;
             float bestDistance = float.MaxValue;
 
-            foreach (BarcodeGraphic graphic in mGraphicOverlay.getGraphics())
+            foreach (GraphicOverlay.Graphic graphic in mGraphicOverlay.getGraphics())
             {
                 Barcode barcode = graphic.GetBarcode();
 

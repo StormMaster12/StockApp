@@ -29,7 +29,7 @@ namespace StockApp.BarcodeReader
 
         public Tracker Create(Java.Lang.Object obj)
         {
-            BarcodeGraphic graphic = new BarcodeGraphic(mgraphicOverlay);
+            GraphicOverlay.Graphic graphic = new GraphicOverlay.Graphic(mgraphicOverlay);
             return new BacrodeGraphicTracker(mgraphicOverlay, graphic);
         }
 
