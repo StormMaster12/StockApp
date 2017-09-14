@@ -21,7 +21,7 @@ namespace StockApp.UI
         private bool mSurfaceAvaialbe;
 
         private CameraSource mCameraSource;
-        private BarcodeGraphic mOverlay;
+        private GraphicOverlay mOverlay;
         private ISurfaceHolder surfaceHolder;
 
         private static CameraSourcePreview Instance { get; set; }
@@ -59,7 +59,7 @@ namespace StockApp.UI
             }
         }
 
-        public void start(CameraSource cameraSource, BarcodeGraphic graphicOverlay)
+        public void start(CameraSource cameraSource, GraphicOverlay graphicOverlay)
         {
             mOverlay = graphicOverlay;
             start(cameraSource);
