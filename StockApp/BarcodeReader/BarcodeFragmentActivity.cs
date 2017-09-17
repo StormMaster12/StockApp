@@ -23,6 +23,7 @@ using Android.Support.V4.View;
 using Android.Support.V4.App;
 using Android.Support.V7.App;
 using Android.Support.Design.Widget;
+using ZXing.Mobile;
 
 using StockApp.UI;
 using Android.Util;
@@ -269,6 +270,7 @@ namespace StockApp.BarcodeReader
 
             public void OnScaleEnd(ScaleGestureDetector detector)
             {
+                thisInstance.mCameraSource.doZoom(detector.ScaleFactor);
             }
         }
     }

@@ -26,6 +26,9 @@ namespace StockApp
 		
 		public static void UpdateIdValues()
 		{
+			global::ZXing.Mobile.Resource.Id.contentFrame = global::StockApp.Resource.Id.contentFrame;
+			global::ZXing.Mobile.Resource.Layout.zxingscanneractivitylayout = global::StockApp.Resource.Layout.zxingscanneractivitylayout;
+			global::ZXing.Mobile.Resource.Layout.zxingscannerfragmentlayout = global::StockApp.Resource.Layout.zxingscannerfragmentlayout;
 		}
 		
 		public partial class Animation
@@ -2438,6 +2441,9 @@ namespace StockApp
 			// aapt resource value: 0x7f0a0082
 			public const int container = 2131361922;
 			
+			// aapt resource value: 0x7f0a00b6
+			public const int contentFrame = 2131361974;
+			
 			// aapt resource value: 0x7f0a0055
 			public const int contentPanel = 2131361877;
 			
@@ -2573,8 +2579,8 @@ namespace StockApp
 			// aapt resource value: 0x7f0a004f
 			public const int list_item = 2131361871;
 			
-			// aapt resource value: 0x7f0a00b7
-			public const int masked = 2131361975;
+			// aapt resource value: 0x7f0a00b8
+			public const int masked = 2131361976;
 			
 			// aapt resource value: 0x7f0a009b
 			public const int media_actions = 2131361947;
@@ -2825,8 +2831,8 @@ namespace StockApp
 			// aapt resource value: 0x7f0a007c
 			public const int viewpager = 2131361916;
 			
-			// aapt resource value: 0x7f0a00b6
-			public const int visible = 2131361974;
+			// aapt resource value: 0x7f0a00b7
+			public const int visible = 2131361975;
 			
 			// aapt resource value: 0x7f0a0014
 			public const int wide = 2131361812;
@@ -3096,6 +3102,12 @@ namespace StockApp
 			
 			// aapt resource value: 0x7f030043
 			public const int support_simple_spinner_dropdown_item = 2130903107;
+			
+			// aapt resource value: 0x7f030044
+			public const int zxingscanneractivitylayout = 2130903108;
+			
+			// aapt resource value: 0x7f030045
+			public const int zxingscannerfragmentlayout = 2130903109;
 			
 			static Layout()
 			{

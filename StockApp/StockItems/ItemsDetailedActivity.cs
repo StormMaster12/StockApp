@@ -15,10 +15,10 @@ using StockApp.HTTP;
 namespace StockApp.StockItems
 {
     [Activity(Label = "Detailed Item Activity")]
-    class ItemsDetailedActivity : AppCompatActivity, IActivityResponse<itemSpecificJson>
+    class ItemsDetailedActivity : AppCompatActivity, IActivityResponse
     {
-        private List<itemSpecificJson> detailedList;
-		private HttpPost<itemSpecificJson> httpPost = new HttpPost<itemSpecificJson>();
+        private List<tescoApiJson> detailedList;
+		private HttpPost httpPost = new HttpPost();
 		private TextView itemName;
 		private TextView itemStatistics;
 		private TextView itemDescription;
@@ -48,9 +48,9 @@ namespace StockApp.StockItems
 
         }
 		
-		public void proccessFinish(List<itemSpecificJson> jsonList)
+		public void proccessFinish(List<tescoApiJson> jsonList)
         {
-            itemSpecificJson item = jsonList[0];
+            tescoApiJson item = jsonList[0];
 
             //itemName.Text = item.Name;
             //itemStatistics.Text = "Date Purchased : " + item.purchaseDate + "\n Expiry Date: " + item.expiryDate + "\n Amount Left: " + item.Amount + "\n Pan: " + item.Pan;

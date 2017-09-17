@@ -45,25 +45,8 @@
     }
 	else {
 		echo "No Post Data Sent";
-	}
-	?>
-  </body>
-</html>
-
-<?php
-        
-  function sqlToJson($result)
-        {
-          $sqlRows = array();
-          while ($r = mysqli_fetch_assoc($result))
-          {
-            $rows[] = $r;
-          }
-          
-          echo json_encode($sqlRows);
-        }
-        
-        
+	}       
+           
   function VerifyTable($connection, $dbName,$table)
     {
       if(!tableExists($table,$dbName,$connection)) {
@@ -83,4 +66,46 @@
            
            return false;
          }
+		 
+	function iterSqlResults($results)
+	{
+		while($r = mysqli_fetch_assoc($result)
+		{
+			getTescoApi($r);
+		}
+	}
+	function getTescoApi($output)
+	{
+		$request = new Http_Request2('https://dev.tescolabs.com/product/');
+		$url = $request->getUrl();
+
+		$headers = array(
+			// Request headers
+			'Ocp-Apim-Subscription-Key' => 'b775ff6e5f284518851939473019dd7a',
+		);
+
+		$request->setHeader($headers);
+
+		$parameters = array(
+			// Request parameters
+			'gtin' => $output,
+		);
+
+		$url->setQueryVariables($parameters);
+
+		$request->setMethod(HTTP_Request2::METHOD_GET);
+
+		// Request body
+		$request->setBody("{body}");
+
+		try
+		{
+			$response = $request->send();
+			echo $response->getBody();
+		}
+		catch (HttpException $ex)
+		{
+			echo $ex;
+		}
+	}
   ?>

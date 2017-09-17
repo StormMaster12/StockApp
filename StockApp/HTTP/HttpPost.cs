@@ -13,13 +13,13 @@ using System.Text.RegularExpressions;
 
 namespace StockApp.HTTP
 {
-    class HttpPost<T> : AsyncTask<string, string , string> where T : RootJson
+    class HttpPost : AsyncTask<string, string , string>
     {
         public readonly string REQUEST_METHOD = "GET";
         public readonly int READ_TIMEOUT = 15000;
         public readonly int CONNECTION_TIMEOUT = 15000;
-        List<T> rootJson = null;
-        public IActivityResponse<T> activityResponse = null;
+        List<tescoApiJson> rootJson = null;
+        public IActivityResponse activityResponse = null;
 
         public MediaType JSON { get; private set; }
 
@@ -27,7 +27,7 @@ namespace StockApp.HTTP
         {
         }
 
-        protected List<T> doHmtl(params string[] strParams)
+        protected List<tescoApiJson> doHmtl(params string[] strParams)
         {
             string strUrl = strParams[0] + "Php_Landing.php";
             string requestType = strParams[1];
@@ -50,18 +50,14 @@ namespace StockApp.HTTP
 
                 if (requestType == "getSpecific")
                 {
-                    strPost += "Id= " + strParams[2] + "&"; 
+                    strPost += "Pan= " + strParams[2] + "&";
                     
                 }
                 else if (requestType == "addProduct")
                 {
-                    strPost += "Name= " + strParams[2] + "&";
-                    strPost +="Pan= " +strParams[3] + "&";
-                    strPost += "Amount= " + strParams[4] + "&";
-                    strPost += "shortDescription= " + strParams[5] + "&";
-                    strPost += "longDescription= " + strParams[6] + "&";
-                    strPost += "currentDate= " + strParams[7] + "&";
-                    strPost += "expiryDate= " + strParams[8] + "&";
+                    strPost +="Pan= " +strParams[2] + "&";
+                    strPost += "Amount= " + strParams[3] + "&";
+                    strPost += "expiryDate= " + strParams[4] + "&";
                 }
     
                 OutputStream outputPost = new BufferedOutputStream(uRLConnection.OutputStream);
@@ -99,7 +95,7 @@ namespace StockApp.HTTP
                 strResponse = Regex.Unescape(strResponse);
                 strResponse = strResponse.Replace(@"\", "");
 
-                rootJson = JsonConvert.DeserializeObject<List<T>>(strResponse);
+                rootJson = JsonConvert.DeserializeObject<List<tescoApiJson>>(strResponse);
             }
             catch(MalformedURLException error)
             {

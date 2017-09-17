@@ -57,11 +57,6 @@ namespace StockApp.UI
         private SurfaceTexture mDummySurfaceTexture;
 
         public ConcurrentDictionary<byte[], ByteBuffer> mBytesToByteBuffer = new ConcurrentDictionary<byte[], ByteBuffer>();
-        //private static var mBytesToByteBuffer = new Dictionary<byte[], ByteBuffer>();
-
-
-        //private static MemoryStream mBytesToByteBuffer = new MemoryStream();
-
 
         public class Builder
         {
@@ -721,8 +716,11 @@ namespace StockApp.UI
             long sizeInBits = previewSize.Height * previewSize.Width * bitsPerPixel;
             int bufferSize = (int)System.Math.Ceiling(sizeInBits / 8.0d) + 1;
 
+
             byte[] byteArray = new byte[bufferSize];
+
             ByteBuffer buffer = ByteBuffer.Wrap(byteArray);
+
             if (!buffer.HasArray)
             {
                 throw new IllegalStateException("Failed to create valid buffer for camera source.");
@@ -784,20 +782,28 @@ namespace StockApp.UI
             {
                 lock (mLock)
                 {
+
                     if (mPendingFrameData != null)
                     {
-                        camera.AddCallbackBuffer(mPendingFrameData.ToArray<System.Byte>());
+                        IntPtr classHandle = JNIEnv.FindClass("java/nio/ByteBuffer");
+                        IntPtr methodId = JNIEnv.GetMethodID(classHandle, "array", "()[B");
+                        IntPtr resultHandle = JNIEnv.CallObjectMethod(mPendingFrameData.Handle, methodId);
+                        byte[] result = JNIEnv.GetArray<byte>(resultHandle);
+
+                        //var bytes = data.ToArray<byte>();
+                        mCamera.AddCallbackBuffer(result);
+                        //camera.AddCallbackBuffer(mPendingFrameData.ToArray<byte>());
                         mPendingFrameData = null;
                     }
-                    if (!cameraSource.mBytesToByteBuffer.ContainsKey(data))
-                    {
-                        Log.Debug(TAG, "Skipping Frame, Could not Find ByteBuffer Associated with image");
-                        return;
+                    //if (!cameraSource.mBytesToByteBuffer.ContainsKey(data))
+                    //{
+                    //    Log.Debug(TAG, "Skipping Frame, Could not Find ByteBuffer Associated with image");
+                    //    return;
 
-                    }
+                    //}
                     mPendingTimeMillis = SystemClock.ElapsedRealtime() - mStartTimeMillis;
                     mPendingFrameId++;
-                    mPendingFrameData = cameraSource.mBytesToByteBuffer[data];
+                    mPendingFrameData = ByteBuffer.Wrap(data);
                     Monitor.PulseAll(mLock);
                 }
             }
@@ -849,7 +855,13 @@ namespace StockApp.UI
                     }
                     finally
                     {
-                        mCamera.AddCallbackBuffer(data.ToArray<System.Byte>());
+                        IntPtr classHandle = JNIEnv.FindClass("java/nio/ByteBuffer");
+                        IntPtr methodId = JNIEnv.GetMethodID(classHandle, "array", "()[B");
+                        IntPtr resultHandle = JNIEnv.CallObjectMethod(data.Handle, methodId);
+                        byte[] result = JNIEnv.GetArray<byte>(resultHandle);
+
+                        //var bytes = data.ToArray<byte>();
+                        mCamera.AddCallbackBuffer(result);
                     }
                 }
             }

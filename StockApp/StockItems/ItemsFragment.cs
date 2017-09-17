@@ -25,13 +25,13 @@ using System.Collections;
 
 namespace StockApp.StockItems
 {
-    class ItemsFragment : Android.Support.V4.App.Fragment, IActivityResponse<itemGeneralJson>
+    class ItemsFragment : Android.Support.V4.App.Fragment, IActivityResponse
     {
-        private HttpPost<itemGeneralJson> getHttp = new HttpPost<itemGeneralJson>(); 
+        private HttpPost getHttp = new HttpPost(); 
         private string[] strHttp = new string[8];
         private string strResult { get; set; }
         private ListView lvStockItem { get; set; }
-        private List<itemGeneralJson> itemsResponse = new List<itemGeneralJson>();
+        private List<tescoApiJson> itemsResponse = new List<tescoApiJson>();
         private ItemsArrayAdapter ItemsArrayAdapter { get; set; }
         private View view { get; set; }
 
@@ -70,9 +70,9 @@ namespace StockApp.StockItems
         }
 
 
-        public void proccessFinish(List<itemGeneralJson> jsonList)
+        public void proccessFinish(List<tescoApiJson> jsonList)
         {
-            foreach(itemGeneralJson rootJson in jsonList)
+            foreach(tescoApiJson rootJson in jsonList)
             {
                 ItemsArrayAdapter.Add(rootJson);
             }

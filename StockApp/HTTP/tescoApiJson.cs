@@ -14,9 +14,10 @@ using Newtonsoft.Json;
 namespace StockApp.HTTP
 {
 
-    public class itemSpecificJson : RootJson
+    public class tescoApiJson : RootJson
     {
-        public Dictionary<string, List<Items>> Info { get; set; }
+        [JsonProperty("products")]
+        public Items items { get; set; }
         public string[] Errors { get; set; }
 
 
