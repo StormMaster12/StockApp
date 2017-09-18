@@ -18,7 +18,7 @@
         
     if ($request_Type == "getAll") {
           $result = mysqli_query($connection, "SELECT amount, [Runout Date]	, Name FROM '$table' ") or die (mysqli_error($connection));
-          sqlToJson($result);                                 
+          iterSqlResults($result);                                 
         }
     elseif ($request_Type = "getSpecific") {
           $amount = $_POST['Amount'];
@@ -27,20 +27,17 @@
           
           $result = mysqli_query($connection, "SELECT * FROM '$table' WHERE Amount = '$amount' AND ExpiryDate = '$expiryDate'
                                               AND Name = '$Name'") or die (mysqli_error($connection));
-          sqlToJson($result);
+          iterSqlResults($result);
         }
     elseif ($request_Type = "addProduct") {
-          $Name = $_POST['Name'];
           $Pan = $_POST['Pan'];
-          $Amount = $_POST['amount'];
-          $shortDescription = $_POST['shortDescription'];
-          $longDescription = $_POST['longDescription'];
-          $currentDate = $_POST['currentDate'];
+	  $Amount = $_POST['Amount'];
           $expiryDate = $_POST['expiryDate'];
-          
-          $query = mysqli_query($connection, "INSERT INTO '$table' (Name, Pan, Amount, shortDescription, longDescription, currentDate, expiryDate)
-                                              Values ( '$Name','$Pan','$Amount','$shortDescription','$longDescription','$currentDate'
-                                              ,'$expiryDate')") or die (mysqli_error($connection));
+          $sql = "INSERT INTO {$table} (Pan, Amount, expiryDate) VALUES ({$Pan},{$Amount},{$expiryDate}) 
+	  	  ON DUPLICATE KEY UPDATE Amount = 1 + Amount";
+	    
+          mysqli_query($connection, $sql) or die (mysqli_error($connection));
+	  $result = mysqli_query($connection, "SELECT Pan FROM TABLE WHERE Pan = {$Pan}") or die (mysqli_error($connection));
         }
     }
 	else {
@@ -69,9 +66,9 @@
 		 
 	function iterSqlResults($results)
 	{
-		while($r = mysqli_fetch_assoc($result)
+		while($r = mysqli_fetch_assoc($result))
 		{
-			getTescoApi($r);
+			getTescoApi($r["Pan"]);
 		}
 	}
 	function getTescoApi($output)
