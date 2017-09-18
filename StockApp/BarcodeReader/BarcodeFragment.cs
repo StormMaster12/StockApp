@@ -91,13 +91,21 @@ namespace StockApp.BarcodeReader
             useFlash = view.FindViewById(Resource.Id.use_flash) as CompoundButton;
             btnReadBarcode = view.FindViewById(Resource.Id.read_barcode) as Button;
             scanner = new MobileBarcodeScanner();
+            scanner.Initialize (Application);
 
+            btnReadBarcode.Click += async delegate {
+            
+                    var result = await scanner.Scan();
 
-            btnReadBarcode.Click += delegate {
-
-                Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                StartActivityForResult(intent, 0);
+                    if (result != null)
+                        Console.WriteLine("Scanned Barcode: " + result.Text);
             };
+
+            //btnReadBarcode.Click += delegate {
+//
+//                Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+//                StartActivityForResult(intent, 0);
+//            };
 
 
 
