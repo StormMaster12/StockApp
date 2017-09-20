@@ -18,7 +18,7 @@ namespace StockApp.StockItems
     class ItemsDetailedActivity : AppCompatActivity, IActivityResponse
     {
         private List<tescoApiJson> detailedList;
-		private HttpPost httpPost = new HttpPost();
+		private HttpPost httpPost;
 		private TextView itemName;
 		private TextView itemStatistics;
 		private TextView itemDescription;
@@ -27,6 +27,7 @@ namespace StockApp.StockItems
 		
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            httpPost = new HttpPost();
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.StockItem_Detailed);
 
@@ -52,11 +53,43 @@ namespace StockApp.StockItems
         {
             tescoApiJson item = jsonList[0];
 
-            //itemName.Text = item.Name;
-            //itemStatistics.Text = "Date Purchased : " + item.purchaseDate + "\n Expiry Date: " + item.expiryDate + "\n Amount Left: " + item.Amount + "\n Pan: " + item.Pan;
-            //itemDescription.Text = "Short Description:\n " + item.Short_Description + "\n Long Description:\n " + item.Long_Description;
-			
-			httpPost.Cancel(true);
+            itemName.Text = item.items[0].description;
+
+            string strDescription="";
+
+            try
+            {
+
+                strDescription += "Nutrition    | " + item.items[0].nutrition.per100Header + "\n";
+
+                foreach (var subItem in item.items[0].nutrition.nutrients)
+                {
+                    strDescription += subItem.name + "  | " + subItem.valuePer100 + "\n";
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            string strIngredients = "";
+            try
+            {
+                strIngredients += "Ingredients \n";
+                foreach (var subItem in item.items[0].ingredients)
+                {
+                    strIngredients += subItem + "\n";
+                }
+            }
+            catch (Exception e)
+            {
+                itemStatistics.Text = strIngredients;
+            }
+
+            itemDescription.Text = strDescription;
+
+            httpPost.Cancel(true);
             
         }
     }

@@ -53,11 +53,12 @@ namespace StockApp.HTTP
                     strPost += "Pan= " + strParams[2] + "&";
                     
                 }
-                else if (requestType == "addProduct")
+                else if (requestType == "addNew")
                 {
                     strPost +="Pan= " +strParams[2] + "&";
                     strPost += "Amount= " + strParams[3] + "&";
                     strPost += "expiryDate= " + strParams[4] + "&";
+                    strPost += "boolRemoveItem=" + strParams[5] + "&";
                 }
     
                 OutputStream outputPost = new BufferedOutputStream(uRLConnection.OutputStream);

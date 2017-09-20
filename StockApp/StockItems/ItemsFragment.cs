@@ -72,9 +72,16 @@ namespace StockApp.StockItems
 
         public void proccessFinish(List<tescoApiJson> jsonList)
         {
-            foreach(tescoApiJson rootJson in jsonList)
+            try
             {
-                ItemsArrayAdapter.Add(rootJson);
+                foreach (tescoApiJson rootJson in jsonList)
+                {
+                    ItemsArrayAdapter.Add(rootJson);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
             
         }

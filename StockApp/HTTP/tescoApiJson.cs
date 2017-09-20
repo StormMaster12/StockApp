@@ -17,7 +17,11 @@ namespace StockApp.HTTP
     public class tescoApiJson : RootJson
     {
         [JsonProperty("products")]
-        public Items items { get; set; }
+        public List<Items> items { get; set; }
+        [JsonProperty("Amount")]
+        public string Amount { get; set; }
+        [JsonProperty("expiryDate")]
+        public string expiryDate { get; set; }
         public string[] Errors { get; set; }
 
 
@@ -46,9 +50,9 @@ namespace StockApp.HTTP
             public class qtyContents
             {
                 [JsonProperty("quantity")]
-                public int quantity { get; set; }
+                public string quantity { get; set; }
                 [JsonProperty("totalQuantity")]
-                public int totalQuantity { get; set; }
+                public string totalQuantity { get; set; }
                 [JsonProperty("quantityUom")]
                 public string quantityUom { get; set; }
                 [JsonProperty("netContents")]
@@ -65,7 +69,7 @@ namespace StockApp.HTTP
                 [JsonProperty("isDrink")]
                 public bool isDrink { get; set; }
                 [JsonProperty("healthScore")]
-                public int healthScore { get; set; }
+                public string healthScore { get; set; }
                 [JsonProperty("isHazardous")]
                 public bool isHazardous { get; set; }
                 [JsonProperty("stprageType")]

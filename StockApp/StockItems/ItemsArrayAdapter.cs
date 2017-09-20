@@ -37,18 +37,14 @@ namespace StockApp.StockItems
             tescoApiJson item =  GetItem(position);
             if (item != null)
             {
-                textView.Text = "Name: " + item.items.description + "\n Amount: 1 \n Expiry Date: 12/09/2018";
-                //imageView.SetImageURI(new Android.Net.Uri("http://google.com"));
-                itemButton.Text = "Click To see more information about :" + item.items.description;
+                textView.Text = "Name: " + item.items[0].description + "\n Amount: " + item.Amount + "\n Expiry Date: " + item.expiryDate;
+                itemButton.Text = "Click To see more information about :" + item.items[0].description;
                 itemButton.Click += (sender, e) =>
                 {
                     string[] strHttp = new string[8];
                     strHttp[0] = mContext.Resources.GetString(Resource.String.webServerUrl); //     "http://ec2-35-177-33-89.eu-west-2.compute.amazonaws.com/";
                     strHttp[1] = mContext.Resources.GetString(Resource.String.getSpecific);
-                    strHttp[2] = GetItem(position).items.gtin.ToString();
-                    //strHttp[3] = GetItem(position).Pan;
-                    //strHttp[4] = GetItem(position).Amount;
-                    //strHttp[5] = GetItem(position).expiryDate;
+                    strHttp[2] = GetItem(position).items[0].gtin.ToString();
 
                     Intent intent = new Intent(mContext, typeof(ItemsDetailedActivity));
                     intent.PutExtra("getSpecificList", strHttp);
