@@ -1,16 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-
 using StockApp.HTTP;
+using System.Collections.Generic;
 
 namespace StockApp.StockItems
 {
@@ -35,7 +27,7 @@ namespace StockApp.StockItems
             Button itemButton = (Button)rowView.FindViewById(Resource.Id.ItemButton);
 
             tescoApiJson item =  GetItem(position);
-            if (item != null)
+            if (item.items.Count != 0)
             {
                 textView.Text = "Name: " + item.items[0].description + "\n Amount: " + item.Amount + "\n Expiry Date: " + item.expiryDate;
                 itemButton.Text = "Click To see more information about :" + item.items[0].description;

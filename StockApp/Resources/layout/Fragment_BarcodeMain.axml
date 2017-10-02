@@ -28,7 +28,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical" >
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -36,6 +37,24 @@
             android:id="@+id/read_barcode"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true" />
+      
+        <Button
+          android:text="Confirm"
+          android:id="@+id/confirm"
+          android:layout_width="wrap_content" 
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_centerHorizontal="true"
+          android:visibility="gone"/>
+      <Button
+          android:text="Delete"
+          android:id="@+id/delete"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:layout_centerHorizontal="true"
+          android:visibility="gone"/>
+        
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

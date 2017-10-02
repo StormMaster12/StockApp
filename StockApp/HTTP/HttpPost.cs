@@ -48,7 +48,7 @@ namespace StockApp.HTTP
                 uRLConnection.DoOutput = true;
                 
 
-                if (requestType == "getSpecific")
+                if (requestType == "getSpecific" || requestType == "removeSpecific")
                 {
                     strPost += "Pan= " + strParams[2] + "&";
                     
@@ -121,9 +121,8 @@ namespace StockApp.HTTP
 
         protected override void OnPostExecute(string result)
         {
-            activityResponse.proccessFinish(rootJson);
             base.OnPostExecute(result);
-            
+            activityResponse.proccessFinish(rootJson);
         }
 
         protected override string RunInBackground(params string[] @params)

@@ -8,4 +8,5 @@
   <string name="getSpecific">getSpecific</string>
   <string name="addNew">addNew</string>
   <string name="webServerUrl">http://ec2-35-177-33-89.eu-west-2.compute.amazonaws.com/</string>
+  <string name="removeSpecific">removeSpecific</string>
 </resources>
