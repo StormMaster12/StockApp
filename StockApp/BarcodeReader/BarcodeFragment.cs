@@ -27,13 +27,10 @@ namespace StockApp.BarcodeReader
         private MobileBarcodeScanner scanner;
         private HttpPost httpPost;
 
-<<<<<<< HEAD
-=======
         // Intailizes variables.
         private static int RC_BARCODE_CAPTURE = 9001;
         private static string TAG = "BarcodeMain";
 
->>>>>>> be08420cf1a5dbab3e82973b460aa23fcf08a86a
         private bool boolRemoveItem = new bool();
         private tescoApiJson apiJson;
 
@@ -43,14 +40,12 @@ namespace StockApp.BarcodeReader
         // This creates the view hierarchy for this fragment. Needs to associate the layout to this fragment.
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-<<<<<<< HEAD
-=======
+
             // Create the httpPost variable and set the IActivityResponse variable to point to this class.
             httpPost = new HttpPost();
             httpPost.activityResponse = this;
 
             // This deals with creating the hierarchy to the view. And setting the view elements to the variables above.
->>>>>>> be08420cf1a5dbab3e82973b460aa23fcf08a86a
             View view = inflater.Inflate(Resource.Layout.Fragment_BarcodeMain, container, false);
             statusMessage = view.FindViewById(Resource.Id.txtBarcodeStatus) as TextView;
             barcodeValue = view.FindViewById(Resource.Id.txtBarcodeValue) as TextView;
@@ -80,14 +75,11 @@ namespace StockApp.BarcodeReader
             
             btnReadBarcode.Click += async delegate
             {
-<<<<<<< HEAD
                 httpPost = new HttpPost();
                 httpPost.activityResponse = this;
 
-=======
                 // On click run the scanner, and wait for the result. Hence the delegate has to be async.
                 // so that other proccess can continue to run. Such as detecting rotation.
->>>>>>> be08420cf1a5dbab3e82973b460aa23fcf08a86a
                 var result = await scanner.Scan();
                 
                 // If the scanning was successful. Execute the http request. Passing the url, string add new and the barcode result.
@@ -187,9 +179,6 @@ namespace StockApp.BarcodeReader
                 httpPost.Cancel(true);
                 httpPost.Dispose();
             }
-
-            
-
         }
 
         string AddSpacesToSentence(string text)
