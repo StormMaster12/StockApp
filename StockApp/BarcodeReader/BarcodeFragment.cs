@@ -13,6 +13,8 @@ namespace StockApp.BarcodeReader
 {
     class BarcodeFragment : Android.Support.V4.App.Fragment, IActivityResponse
     { 
+    
+        // Intializes the View Elements.
         private Button btnReadBarcode { get; set; }
         private Button btnConfirm { get; set; }
         private Button btnDelete { get; set; }
@@ -21,16 +23,34 @@ namespace StockApp.BarcodeReader
         private TextView statusMessage { get; set; }
         private TextView barcodeValue { get; set; }
 
-        MobileBarcodeScanner scanner;
+        // Intializes the class elements that will be used.
+        private MobileBarcodeScanner scanner;
         private HttpPost httpPost;
 
+<<<<<<< HEAD
+=======
+        // Intailizes variables.
+        private static int RC_BARCODE_CAPTURE = 9001;
+        private static string TAG = "BarcodeMain";
+
+>>>>>>> be08420cf1a5dbab3e82973b460aa23fcf08a86a
         private bool boolRemoveItem = new bool();
         private tescoApiJson apiJson;
 
+        // Constructor which does nothing. Class is created fron newInstance()
         public BarcodeFragment() { }
 
+        // This creates the view hierarchy for this fragment. Needs to associate the layout to this fragment.
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
+<<<<<<< HEAD
+=======
+            // Create the httpPost variable and set the IActivityResponse variable to point to this class.
+            httpPost = new HttpPost();
+            httpPost.activityResponse = this;
+
+            // This deals with creating the hierarchy to the view. And setting the view elements to the variables above.
+>>>>>>> be08420cf1a5dbab3e82973b460aa23fcf08a86a
             View view = inflater.Inflate(Resource.Layout.Fragment_BarcodeMain, container, false);
             statusMessage = view.FindViewById(Resource.Id.txtBarcodeStatus) as TextView;
             barcodeValue = view.FindViewById(Resource.Id.txtBarcodeValue) as TextView;
@@ -41,9 +61,12 @@ namespace StockApp.BarcodeReader
 
             btnAddItem = view.FindViewById(Resource.Id.addItem) as CompoundButton;
             btnRemoveItem = view.FindViewById(Resource.Id.removeItem) as CompoundButton;
+            
+            // Intialize the Barcode Scanner Activity
             MobileBarcodeScanner.Initialize(base.Activity.Application);
             scanner = new MobileBarcodeScanner();
 
+            // Adds delegates to the button.Click
             btnAddItem.Click += delegate
             {
                 boolRemoveItem = false;
@@ -54,13 +77,20 @@ namespace StockApp.BarcodeReader
                 boolRemoveItem = true;
             };
 
+            
             btnReadBarcode.Click += async delegate
             {
+<<<<<<< HEAD
                 httpPost = new HttpPost();
                 httpPost.activityResponse = this;
 
+=======
+                // On click run the scanner, and wait for the result. Hence the delegate has to be async.
+                // so that other proccess can continue to run. Such as detecting rotation.
+>>>>>>> be08420cf1a5dbab3e82973b460aa23fcf08a86a
                 var result = await scanner.Scan();
-
+                
+                // If the scanning was successful. Execute the http request. Passing the url, string add new and the barcode result.
                 if (result != null)
                 {
                     string[] strHttp = { GetString(Resource.String.webServerUrl), GetString(Resource.String.addNew), result.Text, "1","23/09/2017",boolRemoveItem.ToString() };
@@ -107,7 +137,8 @@ namespace StockApp.BarcodeReader
         {
             base.OnCreate(savedInstanceState);
         }
-
+    
+        // This is what creates the fragment. bundle args, allows for arguments to be passed to the fragment.    
         public static BarcodeFragment newInstance()
         {
             BarcodeFragment fragment = new BarcodeFragment();
@@ -117,8 +148,13 @@ namespace StockApp.BarcodeReader
             return fragment;
         }
 
+        // This is inherited from IActivityResponse. 
+        // Called from httpPost once the http request has finished.
         public void proccessFinish(List<tescoApiJson> jsonList)
         {
+            // Try exists incase there is a problem with the data from the http response.
+            // Needs to have more detailed information. But at the moment allows the code to 
+            // contiune to execute even if there is an error
             try
             {
                 apiJson = jsonList[0];

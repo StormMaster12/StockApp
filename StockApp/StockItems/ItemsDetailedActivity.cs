@@ -18,11 +18,11 @@ namespace StockApp.StockItems
     class ItemsDetailedActivity : AppCompatActivity, IActivityResponse
     {
         private List<tescoApiJson> detailedList;
-		private HttpPost httpPost;
-		private TextView itemName;
-		private TextView itemStatistics;
-		private TextView itemDescription;
-		private ImageView itemImage;
+	private HttpPost httpPost;
+	private TextView itemName;
+	private TextView itemStatistics;
+	private TextView itemDescription;
+	private ImageView itemImage;
         private string[] strHttpList;
 		
         protected override void OnCreate(Bundle savedInstanceState)

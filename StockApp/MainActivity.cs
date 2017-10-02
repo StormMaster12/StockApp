@@ -17,13 +17,16 @@ namespace StockApp
     [Activity(Label = "StockApp", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
+        // Function to return the types in the current namespace. Used for debuging purposes
         private Type[] GetTypesInNamespace(Assembly assembly, string nameSpace)
         {
             return assembly.GetTypes().Where(t => String.Equals(t.Namespace, nameSpace, StringComparison.Ordinal)).ToArray();
         }
 
+        // Overrided function. The first thing the activity will run.
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            // Passes the savedInstanceState to the AppCompatActivity OnCreate. 
             base.OnCreate(savedInstanceState);
 
             Type[] typelist = GetTypesInNamespace(Assembly.GetExecutingAssembly(), "StockApp");
@@ -35,7 +38,7 @@ namespace StockApp
             // Set the content view from the "Main" layout resource:
             SetContentView(Resource.Layout.Activity_ScreenSlide);
 
-            // Instantiate the adapter and pass in the deck of flash cards:
+            // Instantiate the adapter
             ViewPagerAdapter adapter = new ViewPagerAdapter(SupportFragmentManager);
 
             // Find the ViewPager and plug in the adapter:
