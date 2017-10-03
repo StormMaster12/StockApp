@@ -130,10 +130,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BarcodeReader\BarcodeFragment.cs" />
-    <Compile Include="BarcodeReader\BarcodeFragmentActivity.cs" />
-    <Compile Include="BarcodeReader\BarcodeGraphic.cs" />
-    <Compile Include="BarcodeReader\BarcodeTrackerFactory.cs" />
-    <Compile Include="BarcodeReader\BacrodeGraphicTracker.cs" />
     <Compile Include="HTTP\itemGeneralJson.cs" />
     <Compile Include="HTTP\IActivityResponse.cs" />
     <Compile Include="HTTP\RootJson.cs" />
@@ -143,9 +139,6 @@
     <Compile Include="StockItems\ItemsArrayAdapter.cs" />
     <Compile Include="StockItems\ItemsFragment.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
-    <Compile Include="BarcodeReader\UI\CameraSource.cs" />
-    <Compile Include="BarcodeReader\UI\CameraSourcePreview.cs" />
-    <Compile Include="BarcodeReader\UI\GraphicOverlay.cs" />
     <Compile Include="ViewPagerAdapter.cs" />
     <Compile Include="ViewPagerFragment.cs" />
     <Compile Include="MainActivity.cs" />

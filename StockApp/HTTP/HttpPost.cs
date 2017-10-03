@@ -1,15 +1,13 @@
 //Add Libarys Here. I dont currently know. Will add when I have access to Visual Studio
 using System;
-using Android.Webkit;
-using Android.Media;
 using Android.Provider;
 using Android.OS;
 using Java.Net;
-using Android.Views;
 using Java.IO;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Android.Content.Res;
 
 namespace StockApp.HTTP
 {
@@ -27,66 +25,102 @@ namespace StockApp.HTTP
         {
         }
 
+        private HttpURLConnection openConnection(string strPost, string url, string urlHeader, string requestType, string httpType , HttpURLConnection uRLConnection)
+        {
+            string strUrl;
+            strUrl = url + urlHeader;
+            URL myUrl = new URL(strUrl);
+            uRLConnection = (HttpURLConnection)myUrl.OpenConnection();
+            uRLConnection.DoInput = true;
+            
+
+            if (httpType == "POST")
+            {
+                uRLConnection.RequestMethod = "POST";
+                strPost += "requestType=" + requestType + "&";
+                strPost += "tableName=Stock" + "&";
+                uRLConnection.DoOutput = true;
+            }      
+            else
+            {
+                uRLConnection.RequestMethod = "GET";
+            }
+            return uRLConnection;
+        }
+
         protected List<tescoApiJson> doHmtl(params string[] strParams)
         {
-            string strUrl = strParams[0] + "Php_Landing.php";
             string requestType = strParams[1];
             string strResponse = "";
             string strPost = "";
+            string httpType = "";
 
-            var strExemptions = new List<string> { "<html>", "<body>", "</body>" , "</html>" };
-            URL myUrl = new URL(strUrl);
             HttpURLConnection uRLConnection = null;
 
             try
             {
-                uRLConnection = (HttpURLConnection)myUrl.OpenConnection();
-                uRLConnection.RequestMethod = "POST";
-                strPost += "requestType=" + requestType + "&";
-                strPost += "tableName=Stock" + "&";
-                uRLConnection.DoInput = true;
-                uRLConnection.DoOutput = true;
                 
-
                 if (requestType == "getSpecific" || requestType == "removeSpecific")
                 {
+                    httpType = "POST";
+                    uRLConnection = openConnection(strPost, strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
                     strPost += "Pan= " + strParams[2] + "&";
-                    
                 }
                 else if (requestType == "addNew")
                 {
+                    httpType = "POST";
+                    uRLConnection = openConnection(strPost, strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
                     strPost +="Pan= " +strParams[2] + "&";
                     strPost += "Amount= " + strParams[3] + "&";
                     strPost += "expiryDate= " + strParams[4] + "&";
                     strPost += "boolRemoveItem=" + strParams[5] + "&";
                 }
-    
-                OutputStream outputPost = new BufferedOutputStream(uRLConnection.OutputStream);
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(uRLConnection.OutputStream, "UTF-8"));
+                else if (requestType == "tescoData")
+                {
+                    httpType = "GET";
+                    string urlHeader = "?gtin=" + strParams[2];
+                    uRLConnection = openConnection(strPost, "https://dev.tescolabs.com/product/", urlHeader, requestType, httpType, uRLConnection);
+                    uRLConnection.SetRequestProperty("Ocp-Apim-Subscription-Key","b775ff6e5f284518851939473019dd7a");
+                }
+                else if (requestType == "getAll")
+                {
+                    httpType = "POST";
+                    uRLConnection = openConnection(strPost, strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
+                }
 
-                writer.Write(strPost);
+                if (httpType == "POST")
+                {
+                    OutputStream outputPost = new BufferedOutputStream(uRLConnection.OutputStream);
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(uRLConnection.OutputStream, "UTF-8"));
 
-                writer.Flush();
-                writer.Close();
-                uRLConnection.OutputStream.Close();
+                    writer.Write(strPost);
 
-                System.Console.WriteLine("Output String : {0}" , outputPost.ToString());
+                    writer.Flush();
+                    writer.Close();
+                    uRLConnection.OutputStream.Close();
+
+                    System.Console.WriteLine("Output String : {0}", outputPost.ToString());
+                }
+                
 
                 int responseCode = (int)uRLConnection.ResponseCode;
 
-                if (responseCode == (int)HttpStatus.Ok)
+                if (responseCode == (int)HttpStatus.Ok || responseCode == 500)
                 {
                     string line;
-
                     BufferedReader br = new BufferedReader(new InputStreamReader(uRLConnection.InputStream));
-
+                    if (requestType == "tescoData")
+                    {
+                        strResponse += "[";
+                    }
                     while((line = br.ReadLine()) != null)
                     {
                         line = Regex.Replace(line, @"\s", "");
-                        if (!strExemptions.Contains(line))
-                        {
-                            strResponse += line.Replace("</body>", "");
-                        }
+                        strResponse += line;
+                    }
+                    if (requestType == "tescoData")
+                    {
+                        strResponse += "]";
                     }
                 }
                 else

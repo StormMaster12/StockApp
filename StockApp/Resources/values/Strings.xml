@@ -7,6 +7,10 @@
   <string name="getAll">getAll</string>
   <string name="getSpecific">getSpecific</string>
   <string name="addNew">addNew</string>
-  <string name="webServerUrl">http://ec2-35-177-33-89.eu-west-2.compute.amazonaws.com/</string>
   <string name="removeSpecific">removeSpecific</string>
+  <string name="tescoData">tescoData</string>
+  <string name="webServerUrl">http://ec2-35-177-33-89.eu-west-2.compute.amazonaws.com/</string>
+  <string name="tescoApiUrl">https://dev.tescolabs.com/product/</string>
+  <string name="tescoApiKey">b775ff6e5f284518851939473019dd7a</string>
+  
 </resources>

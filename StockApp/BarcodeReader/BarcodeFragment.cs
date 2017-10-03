@@ -28,9 +28,6 @@ namespace StockApp.BarcodeReader
         private HttpPost httpPost;
 
         // Intailizes variables.
-        private static int RC_BARCODE_CAPTURE = 9001;
-        private static string TAG = "BarcodeMain";
-
         private bool boolRemoveItem = new bool();
         private tescoApiJson apiJson;
 
@@ -85,7 +82,7 @@ namespace StockApp.BarcodeReader
                 // If the scanning was successful. Execute the http request. Passing the url, string add new and the barcode result.
                 if (result != null)
                 {
-                    string[] strHttp = { GetString(Resource.String.webServerUrl), GetString(Resource.String.addNew), result.Text, "1","23/09/2017",boolRemoveItem.ToString() };
+                    string[] strHttp = { GetString(Resource.String.webServerUrl), GetString(Resource.String.tescoData), result.Text, "1","23/09/2017",boolRemoveItem.ToString() };
                     httpPost.Execute(strHttp);
 
                     Console.WriteLine("Scanned Barcode: " + result.Text);
@@ -150,7 +147,7 @@ namespace StockApp.BarcodeReader
             try
             {
                 apiJson = jsonList[0];
-                if (apiJson.flags == "dataReturned")
+                if (apiJson.flags == "dataReturned" || apiJson.flags ==null)
                 {
                     string strDescription = AddSpacesToSentence(apiJson.items[0].description);
                     string strGTIN = AddSpacesToSentence(apiJson.items[0].gtin);

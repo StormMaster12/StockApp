@@ -1,8 +1,4 @@
-﻿using System;
-
-using Android.Views;
-using Android.Widget;
-using Android.Support.V4.App;
+﻿using Android.Support.V4.App;
 using Java.Lang;
 
 using StockApp.BarcodeReader;

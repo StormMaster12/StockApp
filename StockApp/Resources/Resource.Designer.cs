@@ -3311,8 +3311,8 @@ namespace StockApp
 			// aapt resource value: 0x7f07003b
 			public const int read_barcode = 2131165243;
 			
-			// aapt resource value: 0x7f070042
-			public const int removeSpecific = 2131165250;
+			// aapt resource value: 0x7f070041
+			public const int removeSpecific = 2131165249;
 			
 			// aapt resource value: 0x7f070024
 			public const int search_menu_title = 2131165220;
@@ -3320,11 +3320,20 @@ namespace StockApp
 			// aapt resource value: 0x7f070025
 			public const int status_bar_notification_info_overflow = 2131165221;
 			
+			// aapt resource value: 0x7f070045
+			public const int tescoApiKey = 2131165253;
+			
+			// aapt resource value: 0x7f070044
+			public const int tescoApiUrl = 2131165252;
+			
+			// aapt resource value: 0x7f070042
+			public const int tescoData = 2131165250;
+			
 			// aapt resource value: 0x7f07003d
 			public const int use_flash = 2131165245;
 			
-			// aapt resource value: 0x7f070041
-			public const int webServerUrl = 2131165249;
+			// aapt resource value: 0x7f070043
+			public const int webServerUrl = 2131165251;
 			
 			static String()
 			{
