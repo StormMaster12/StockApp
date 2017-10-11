@@ -2,6 +2,8 @@
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using Android.App;
+using Android.Content;
 
 using Android.Gms.Common.Apis;
 using ZXing.Mobile;
@@ -9,9 +11,10 @@ using StockApp.HTTP;
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace StockApp.BarcodeReader
 {
-    class BarcodeFragment : Android.Support.V4.App.Fragment, IActivityResponse
+    class BarcodeFragment : Android.Support.V4.App.Fragment, IActivityResponse, IDialogInterfaceOnClickListener
     { 
     
         // Intializes the View Elements.
@@ -30,6 +33,7 @@ namespace StockApp.BarcodeReader
         // Intailizes variables.
         private bool boolRemoveItem = new bool();
         private tescoApiJson apiJson;
+        private string barcodeResult { get; set; }
 
         // Constructor which does nothing. Class is created fron newInstance()
         public BarcodeFragment() { }
@@ -82,8 +86,9 @@ namespace StockApp.BarcodeReader
                 // If the scanning was successful. Execute the http request. Passing the url, string add new and the barcode result.
                 if (result != null)
                 {
-                    string[] strHttp = { GetString(Resource.String.webServerUrl), GetString(Resource.String.tescoData), result.Text, "1","23/09/2017",boolRemoveItem.ToString() };
+                    string[] strHttp = { GetString(Resource.String.tescoApiUrl), GetString(Resource.String.tescoData), result.Text, "1","23/09/2017",boolRemoveItem.ToString() };
                     httpPost.Execute(strHttp);
+                    barcodeResult = result.Text;
 
                     Console.WriteLine("Scanned Barcode: " + result.Text);
                 }
@@ -92,25 +97,33 @@ namespace StockApp.BarcodeReader
 
             btnConfirm.Click += delegate
             {
-                barcodeValue.Text = "";
-                statusMessage.Text = "Confirmed \nScan a New Item?";
-                btnConfirm.Visibility = ViewStates.Gone;
-                btnDelete.Visibility = ViewStates.Gone;
-                btnReadBarcode.Visibility = ViewStates.Visible;
-                btnAddItem.Visibility = ViewStates.Visible;
-                btnRemoveItem.Visibility = ViewStates.Visible;
+                if (((StockAppApplicaiton)Activity.Application).acct != null)
+                {
+                    httpPost = new HttpPost();
+                    httpPost.activityResponse = this;
+                    barcodeValue.Text = "";
+                    statusMessage.Text = "Database Updated \nScan a New Item?";
+                    string[] strHttp = { GetString(Resource.String.webServerUrl), GetString(Resource.String.addNew), barcodeResult, boolRemoveItem.ToString() };
+                    httpPost.Execute(strHttp);
+                    btnConfirm.Visibility = ViewStates.Gone;
+                    btnDelete.Visibility = ViewStates.Gone;
+                    btnReadBarcode.Visibility = ViewStates.Visible;
+                    btnAddItem.Visibility = ViewStates.Visible;
+                    btnRemoveItem.Visibility = ViewStates.Visible;
+                }
+                else
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Activity);
+                    builder.SetMessage("It looks like you are not signed in to a google Account \nWould You " +
+                        "Like To Sign In?").SetPositiveButton("Yes", this).SetNegativeButton("No", this).Show();
+                }
+                
             };
 
             btnDelete.Click += delegate
             {
-                httpPost = new HttpPost();
-                httpPost.activityResponse = this;
-
                 barcodeValue.Text = "";
                 statusMessage.Text = "Not the Correct Item\nScan a New Item? ";
-
-                string[] strHttp = { GetString(Resource.String.webServerUrl), GetString(Resource.String.removeSpecific),apiJson.items[0].gtin};
-                httpPost.Execute(strHttp);
 
                 btnConfirm.Visibility = ViewStates.Gone;
                 btnDelete.Visibility = ViewStates.Gone;
@@ -126,8 +139,8 @@ namespace StockApp.BarcodeReader
         {
             base.OnCreate(savedInstanceState);
         }
-    
-        // This is what creates the fragment. bundle args, allows for arguments to be passed to the fragment.    
+
+        //This is what creates the fragment.bundle args, allows for arguments to be passed to the fragment.
         public static BarcodeFragment newInstance()
         {
             BarcodeFragment fragment = new BarcodeFragment();
@@ -144,8 +157,10 @@ namespace StockApp.BarcodeReader
             // Try exists incase there is a problem with the data from the http response.
             // Needs to have more detailed information. But at the moment allows the code to 
             // contiune to execute even if there is an error
-            try
+            if (jsonList != null)
             {
+
+            
                 apiJson = jsonList[0];
                 if (apiJson.flags == "dataReturned" || apiJson.flags ==null)
                 {
@@ -161,21 +176,19 @@ namespace StockApp.BarcodeReader
                     return;
                 }
             }
-            catch (Exception e)
+            else
             {
                 statusMessage.Text = "Retrieval From Server Uncessfull";
             }
-            finally
-            {
-                btnReadBarcode.Visibility = ViewStates.Gone;
-                btnAddItem.Visibility = ViewStates.Gone;
-                btnRemoveItem.Visibility = ViewStates.Gone;
-                btnConfirm.Visibility = ViewStates.Visible;
-                btnDelete.Visibility = ViewStates.Visible;
+            
+            btnReadBarcode.Visibility = ViewStates.Gone;
+            btnAddItem.Visibility = ViewStates.Gone;
+            btnRemoveItem.Visibility = ViewStates.Gone;
+            btnConfirm.Visibility = ViewStates.Visible;
+            btnDelete.Visibility = ViewStates.Visible;
 
-                httpPost.Cancel(true);
-                httpPost.Dispose();
-            }
+            httpPost.Cancel(true);
+            httpPost.Dispose();
         }
 
         string AddSpacesToSentence(string text)
@@ -191,6 +204,19 @@ namespace StockApp.BarcodeReader
                 newText.Append(text[i]);
             }
             return newText.ToString();
+        }
+
+        public void OnClick(IDialogInterface dialog, int which)
+        {
+            switch(which)
+            {
+                case -1:
+                    Intent intent = new Intent(Activity, typeof(SignIn.SigninClass));
+                    StartActivity(intent);
+                    break;
+                case -2:
+                    break;
+            }
         }
     }
 }

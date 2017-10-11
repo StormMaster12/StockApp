@@ -1,13 +1,11 @@
-//Add Libarys Here. I dont currently know. Will add when I have access to Visual Studio
 using System;
-using Android.Provider;
 using Android.OS;
 using Java.Net;
 using Java.IO;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Android.Content.Res;
+using Android.Content;
 
 namespace StockApp.HTTP
 {
@@ -16,16 +14,18 @@ namespace StockApp.HTTP
         public readonly string REQUEST_METHOD = "GET";
         public readonly int READ_TIMEOUT = 15000;
         public readonly int CONNECTION_TIMEOUT = 15000;
+        public Context mContext { get; set; }
         List<tescoApiJson> rootJson = null;
         public IActivityResponse activityResponse = null;
-
-        public MediaType JSON { get; private set; }
+        string strPost = "";
+        private string idToken;
+        private StockAppApplicaiton appApplicaiton = StockAppApplicaiton.getconfig();
 
         public HttpPost()
         {
         }
 
-        private HttpURLConnection openConnection(string strPost, string url, string urlHeader, string requestType, string httpType , HttpURLConnection uRLConnection)
+        private HttpURLConnection openConnection(string url, string urlHeader, string requestType, string httpType , HttpURLConnection uRLConnection)
         {
             string strUrl;
             strUrl = url + urlHeader;
@@ -52,24 +52,35 @@ namespace StockApp.HTTP
         {
             string requestType = strParams[1];
             string strResponse = "";
-            string strPost = "";
             string httpType = "";
+
+            if (requestType != "tescoData")
+            {
+                if (appApplicaiton.acct == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    idToken = appApplicaiton.acct.IdToken;
+                    strPost += "idToken=" + idToken + "&";
+                }
+            }
 
             HttpURLConnection uRLConnection = null;
 
             try
-            {
-                
+            {               
                 if (requestType == "getSpecific" || requestType == "removeSpecific")
                 {
                     httpType = "POST";
-                    uRLConnection = openConnection(strPost, strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
+                    uRLConnection = openConnection(strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
                     strPost += "Pan= " + strParams[2] + "&";
                 }
                 else if (requestType == "addNew")
                 {
                     httpType = "POST";
-                    uRLConnection = openConnection(strPost, strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
+                    uRLConnection = openConnection(strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
                     strPost +="Pan= " +strParams[2] + "&";
                     strPost += "Amount= " + strParams[3] + "&";
                     strPost += "expiryDate= " + strParams[4] + "&";
@@ -79,13 +90,13 @@ namespace StockApp.HTTP
                 {
                     httpType = "GET";
                     string urlHeader = "?gtin=" + strParams[2];
-                    uRLConnection = openConnection(strPost, "https://dev.tescolabs.com/product/", urlHeader, requestType, httpType, uRLConnection);
+                    uRLConnection = openConnection(strParams[0], urlHeader, requestType, httpType, uRLConnection);
                     uRLConnection.SetRequestProperty("Ocp-Apim-Subscription-Key","b775ff6e5f284518851939473019dd7a");
                 }
                 else if (requestType == "getAll")
                 {
                     httpType = "POST";
-                    uRLConnection = openConnection(strPost, strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
+                    uRLConnection = openConnection(strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
                 }
 
                 if (httpType == "POST")
@@ -105,7 +116,7 @@ namespace StockApp.HTTP
 
                 int responseCode = (int)uRLConnection.ResponseCode;
 
-                if (responseCode == (int)HttpStatus.Ok || responseCode == 500)
+                if (responseCode == (int)HttpStatus.Ok)
                 {
                     string line;
                     BufferedReader br = new BufferedReader(new InputStreamReader(uRLConnection.InputStream));
@@ -115,7 +126,6 @@ namespace StockApp.HTTP
                     }
                     while((line = br.ReadLine()) != null)
                     {
-                        line = Regex.Replace(line, @"\s", "");
                         strResponse += line;
                     }
                     if (requestType == "tescoData")
@@ -123,10 +133,14 @@ namespace StockApp.HTTP
                         strResponse += "]";
                     }
                 }
+                else if(responseCode == (int)HttpStatus.Unauthorized)
+                {
+                    strResponse = "[{'Error': 'Unauthorized User' }]";
+                }
                 else
                 {
                     strResponse = "Nothing Received";
-                }
+                } 
                 strResponse = Regex.Unescape(strResponse);
                 strResponse = strResponse.Replace(@"\", "");
 

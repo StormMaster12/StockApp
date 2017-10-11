@@ -12,5 +12,12 @@
   <string name="webServerUrl">http://ec2-35-177-33-89.eu-west-2.compute.amazonaws.com/</string>
   <string name="tescoApiUrl">https://dev.tescolabs.com/product/</string>
   <string name="tescoApiKey">b775ff6e5f284518851939473019dd7a</string>
-  
+  <string name="signed_in_fmt">Signed in as: {0}</string>
+  <string name="signing_in">Signing in…</string>
+  <string name="signed_out">Signed out</string>
+  <string name="play_services_error_fmt">Google Play Services Error: {0}</string>
+  <string name="sign_out">Sign Out</string>
+  <string name="disconnect">Disconnect</string>
+  <string name="desc_google_icon">Google Logo</string>
+  <string name="signed_in_fmt">Signed in as: %s</string>
 </resources>
