@@ -7,13 +7,14 @@ using Android.OS;
 using Android.Widget;
 using Android.Support.V7.App;
 using StockApp.HTTP;
+using System.Collections.ObjectModel;
 
 namespace StockApp.StockItems
 {
     [Activity(Label = "Detailed Item Activity")]
     class ItemsDetailedActivity : AppCompatActivity
     {
-        private List<tescoApiJson> detailedList;
+        private ObservableCollection<tescoApiJson> detailedList;
 	    private TextView itemName;
 	    private TextView itemStatistics;
         private TableLayout tableNutrition;

@@ -10,11 +10,11 @@ using ZXing.Mobile;
 using StockApp.HTTP;
 using System.Collections.Generic;
 using System.Text;
-
+using System.Collections.ObjectModel;
 
 namespace StockApp.BarcodeReader
 {
-    class BarcodeFragment : Android.Support.V4.App.Fragment, IActivityResponse, IDialogInterfaceOnClickListener
+    class BarcodeFragment : Android.Support.V4.App.Fragment, IActivityResponse, IDialogInterfaceOnClickListener, IOnDatePickerResponse
     { 
     
         // Intializes the View Elements.
@@ -31,7 +31,8 @@ namespace StockApp.BarcodeReader
         private HttpPost httpPost;
 
         // Intailizes variables.
-        private bool boolRemoveItem = new bool();
+        private bool boolRemoveItem;
+        private bool Confirmed;
         private tescoApiJson apiJson;
         private string barcodeResult { get; set; }
 
@@ -41,11 +42,6 @@ namespace StockApp.BarcodeReader
         // This creates the view hierarchy for this fragment. Needs to associate the layout to this fragment.
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-
-            // Create the httpPost variable and set the IActivityResponse variable to point to this class.
-            httpPost = new HttpPost();
-            httpPost.activityResponse = this;
-
             // This deals with creating the hierarchy to the view. And setting the view elements to the variables above.
             View view = inflater.Inflate(Resource.Layout.Fragment_BarcodeMain, container, false);
             statusMessage = view.FindViewById(Resource.Id.txtBarcodeStatus) as TextView;
@@ -76,9 +72,6 @@ namespace StockApp.BarcodeReader
             
             btnReadBarcode.Click += async delegate
             {
-                httpPost = new HttpPost();
-                httpPost.activityResponse = this;
-
                 // On click run the scanner, and wait for the result. Hence the delegate has to be async.
                 // so that other proccess can continue to run. Such as detecting rotation.
                 var result = await scanner.Scan();
@@ -86,30 +79,22 @@ namespace StockApp.BarcodeReader
                 // If the scanning was successful. Execute the http request. Passing the url, string add new and the barcode result.
                 if (result != null)
                 {
-                    string[] strHttp = { GetString(Resource.String.tescoApiUrl), GetString(Resource.String.tescoData), result.Text, "1","23/09/2017",boolRemoveItem.ToString() };
-                    httpPost.Execute(strHttp);
+                    Confirmed = false;
                     barcodeResult = result.Text;
-
+                    createhttpPost(GetString(Resource.String.tescoApiUrl), GetString(Resource.String.tescoData), result.Text, "1", "23/09/2017", boolRemoveItem.ToString());
                     Console.WriteLine("Scanned Barcode: " + result.Text);
-                }
-                        
+                }  
             };
 
             btnConfirm.Click += delegate
             {
                 if (((StockAppApplicaiton)Activity.Application).acct != null)
                 {
-                    httpPost = new HttpPost();
-                    httpPost.activityResponse = this;
                     barcodeValue.Text = "";
-                    statusMessage.Text = "Database Updated \nScan a New Item?";
-                    string[] strHttp = { GetString(Resource.String.webServerUrl), GetString(Resource.String.addNew), barcodeResult, boolRemoveItem.ToString() };
-                    httpPost.Execute(strHttp);
-                    btnConfirm.Visibility = ViewStates.Gone;
-                    btnDelete.Visibility = ViewStates.Gone;
-                    btnReadBarcode.Visibility = ViewStates.Visible;
-                    btnAddItem.Visibility = ViewStates.Visible;
-                    btnRemoveItem.Visibility = ViewStates.Visible;
+
+                    DatePickerDialogFragment dialogFragment = new DatePickerDialogFragment();
+                    dialogFragment.onDatePickerResponse = this;
+                    dialogFragment.Show(Activity.FragmentManager, "Date Picker");
                 }
                 else
                 {
@@ -152,41 +137,41 @@ namespace StockApp.BarcodeReader
 
         // This is inherited from IActivityResponse. 
         // Called from httpPost once the http request has finished.
-        public void proccessFinish(List<tescoApiJson> jsonList)
+        public void proccessFinish(ObservableCollection<tescoApiJson> jsonList)
         {
             // Try exists incase there is a problem with the data from the http response.
             // Needs to have more detailed information. But at the moment allows the code to 
             // contiune to execute even if there is an error
-            if (jsonList != null)
+            if (Confirmed != true)
             {
-
-            
-                apiJson = jsonList[0];
-                if (apiJson.flags == "dataReturned" || apiJson.flags ==null)
+                if (jsonList != null)
                 {
-                    string strDescription = AddSpacesToSentence(apiJson.items[0].description);
-                    string strGTIN = AddSpacesToSentence(apiJson.items[0].gtin);
+                    apiJson = jsonList[0];
+                    if (apiJson.flags["dataReturned"] == "true" || apiJson.flags == null)
+                    {
+                        string strDescription = AddSpacesToSentence(apiJson.items[0].description);
+                        string strGTIN = AddSpacesToSentence(apiJson.items[0].gtin);
 
-                    statusMessage.Text = strDescription;
-                    barcodeValue.Text = strGTIN;
+                        statusMessage.Text = strDescription;
+                        barcodeValue.Text = strGTIN;
+                    }
+                    else if (apiJson.flags["removed"] == "true")
+                    {
+                        barcodeValue.Text = "Data Removed";
+                        return;
+                    }
                 }
-                else if(apiJson.flags == "removed")
+                else
                 {
-                    barcodeValue.Text = "Data Removed";
-                    return;
+                    statusMessage.Text = "Retrieval From Server Uncessfull";
                 }
-            }
-            else
-            {
-                statusMessage.Text = "Retrieval From Server Uncessfull";
-            }
-            
-            btnReadBarcode.Visibility = ViewStates.Gone;
-            btnAddItem.Visibility = ViewStates.Gone;
-            btnRemoveItem.Visibility = ViewStates.Gone;
-            btnConfirm.Visibility = ViewStates.Visible;
-            btnDelete.Visibility = ViewStates.Visible;
 
+                btnReadBarcode.Visibility = ViewStates.Gone;
+                btnAddItem.Visibility = ViewStates.Gone;
+                btnRemoveItem.Visibility = ViewStates.Gone;
+                btnConfirm.Visibility = ViewStates.Visible;
+                btnDelete.Visibility = ViewStates.Visible;
+            }
             httpPost.Cancel(true);
             httpPost.Dispose();
         }
@@ -217,6 +202,43 @@ namespace StockApp.BarcodeReader
                 case -2:
                     break;
             }
+        }
+
+        public void createhttpPost(string url, string requestType, string PAN, string amount, string Date, string removeItem)
+        {
+            string[] strHtp = { url, requestType, PAN, amount, Date, removeItem };
+            httpPost = new HttpPost();
+            httpPost.activityResponse = this;
+            httpPost.Execute(strHtp);
+        }
+
+
+        public void update(int year, int month, int day)
+        {
+
+            Confirmed = true;
+            string Date;
+            month++;
+
+            if(month< 10)
+            {
+                Date = year.ToString() + "/" + "0" + month.ToString() + "/" +  day.ToString();
+            }
+            else
+            {
+                Date = year.ToString() + "/" + month.ToString() + "/" + day.ToString();
+            }
+
+            
+
+            createhttpPost(GetString(Resource.String.webServerUrl), GetString(Resource.String.addNew), barcodeResult, "1", Date, boolRemoveItem.ToString());
+
+            btnConfirm.Visibility = ViewStates.Gone;
+            btnDelete.Visibility = ViewStates.Gone;
+            btnReadBarcode.Visibility = ViewStates.Visible;
+            btnAddItem.Visibility = ViewStates.Visible;
+            btnRemoveItem.Visibility = ViewStates.Visible;
+            statusMessage.Text = "Database Updated \nScan a New Item?";
         }
     }
 }

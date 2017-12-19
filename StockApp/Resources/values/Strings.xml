@@ -20,4 +20,5 @@
   <string name="disconnect">Disconnect</string>
   <string name="desc_google_icon">Google Logo</string>
   <string name="signed_in_fmt">Signed in as: %s</string>
+  <string name="statusMessage">Status Message</string>
 </resources>

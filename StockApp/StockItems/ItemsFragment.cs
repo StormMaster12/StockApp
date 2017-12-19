@@ -8,6 +8,8 @@ using Android.Widget;
 using StockApp.HTTP;
 using StockApp.SignIn;
 using Android.Support.V4.App;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace StockApp.StockItems
 {
@@ -17,7 +19,7 @@ namespace StockApp.StockItems
         private string[] strHttp = new string[8];
         private string strResult { get; set; }
         private ListView lvStockItem { get; set; }
-        private List<tescoApiJson> itemsResponse = new List<tescoApiJson>();
+        private ObservableCollection<tescoApiJson> itemsResponse = new ObservableCollection<tescoApiJson>();
         private ItemsArrayAdapter ItemsArrayAdapter { get; set; }
         private View view { get; set; }
 
@@ -36,7 +38,7 @@ namespace StockApp.StockItems
 
         private void populateItems()
         {
-            if (((StockAppApplicaiton) Activity.Application).acct != null && !((StockAppApplicaiton)Activity.Application).SignedIn)
+            if (StockAppApplicaiton.getconfig().acct != null && !StockAppApplicaiton.getconfig().SignedIn)
             {
                 getHttp = new HttpPost();
                 getHttp.activityResponse = this;
@@ -46,16 +48,14 @@ namespace StockApp.StockItems
                 getHttp.Execute(strHttp);
                 ((StockAppApplicaiton)Activity.Application).SignedIn = true;
             }
-            else if(((StockAppApplicaiton)Activity.Application).acct == null)
+            else if(StockAppApplicaiton.getconfig().acct == null)
             {
-
-                List<tescoApiJson> tescoApiList = ((StockAppApplicaiton)Activity.Application).tescoApiList;
+                ObservableCollection<tescoApiJson> tescoApiList = StockAppApplicaiton.getconfig().tescoApiList;
                 for (int count = ItemsArrayAdapter.Count - 1; count >= 0; count--)
                 {
                     ItemsArrayAdapter.Remove(tescoApiList[count]);
                     tescoApiList.RemoveAt(count);
                 }
-
             }
         }
 
@@ -64,35 +64,53 @@ namespace StockApp.StockItems
             ItemsFragment fragment = new ItemsFragment();
             Bundle args = new Bundle();
 
+            StockAppApplicaiton.getconfig().tescoApiList.CollectionChanged += fragment.ModifyItems;
+
             fragment.Arguments = args;
             return fragment;
         }
 
-        public void proccessFinish(List<tescoApiJson> jsonList)
+        public void proccessFinish(ObservableCollection<tescoApiJson> jsonList)
         {
-            try
-            {
-                foreach (tescoApiJson rootJson in jsonList)
-                {
-                    ItemsArrayAdapter.Add(rootJson);
-                }
-
-                ((StockAppApplicaiton)Activity.Application).tescoApiList = jsonList;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-            finally
-            {
-                getHttp.Cancel(true);
-                getHttp.Dispose();
-            }
+            getHttp.Cancel(true);
+            getHttp.Dispose();
         }
 
         public void update()
         {
             populateItems();
+        }
+
+        private void ModifyItems(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (StockAppApplicaiton.getconfig().acct != null)
+            {
+                ObservableCollection<tescoApiJson> tlist = StockAppApplicaiton.getconfig().tescoApiList;
+
+                foreach (var item in tlist)
+                {
+                    bool found = false;
+                    for (int i = 0; i < ItemsArrayAdapter.Count; i++)
+                    {
+                        if (ItemsArrayAdapter.GetItem(i).Equals(item))
+                        {
+                            found = true;
+                            break;
+                        }
+                        else
+                        {
+                            found = false;
+                        }
+                    }
+
+                    if (!found)
+                    {
+                        ItemsArrayAdapter.Add(item);
+                    }
+                }
+            }
+
+            
         }
     }
 }

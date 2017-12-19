@@ -5,6 +5,7 @@ using StockApp.HTTP;
 using StockApp.StockItems;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace StockApp
 {
@@ -12,7 +13,7 @@ namespace StockApp
     public class StockAppApplicaiton : Application
     {
         public GoogleSignInAccount acct { get; set; }
-        public List<tescoApiJson> tescoApiList { get; set; }
+        public ObservableCollection<tescoApiJson> tescoApiList { get; set; }
         public ItemsFragment ItemsFragment { get; set; }
         public bool SignedIn { get; set; }
         private static StockAppApplicaiton instance;
@@ -24,6 +25,7 @@ namespace StockApp
         public override void OnCreate()
         {
             base.OnCreate();
+            tescoApiList = new ObservableCollection<tescoApiJson>();
             instance = this;
         }
 

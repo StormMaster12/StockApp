@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace StockApp.HTTP
 {
     interface IActivityResponse
 
     {
-        void proccessFinish(List<tescoApiJson> jsonList);
+        void proccessFinish(ObservableCollection<tescoApiJson> jsonList);
     }
 }

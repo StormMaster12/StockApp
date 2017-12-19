@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Android.Content;
+using System.Collections.ObjectModel;
 
 namespace StockApp.HTTP
 {
@@ -15,7 +16,7 @@ namespace StockApp.HTTP
         public readonly int READ_TIMEOUT = 15000;
         public readonly int CONNECTION_TIMEOUT = 15000;
         public Context mContext { get; set; }
-        List<tescoApiJson> rootJson = null;
+        ObservableCollection<tescoApiJson> rootJson = null;
         public IActivityResponse activityResponse = null;
         string strPost = "";
         private string idToken;
@@ -48,7 +49,7 @@ namespace StockApp.HTTP
             return uRLConnection;
         }
 
-        protected List<tescoApiJson> doHmtl(params string[] strParams)
+        protected ObservableCollection<tescoApiJson> doHmtl(params string[] strParams)
         {
             string requestType = strParams[1];
             string strResponse = "";
@@ -83,7 +84,7 @@ namespace StockApp.HTTP
                     uRLConnection = openConnection(strParams[0], "Php_Landing.php", requestType, httpType, uRLConnection);
                     strPost +="Pan= " +strParams[2] + "&";
                     strPost += "Amount= " + strParams[3] + "&";
-                    strPost += "expiryDate= " + strParams[4] + "&";
+                    strPost += "expiryDate=" + strParams[4] + "&";
                     strPost += "boolRemoveItem=" + strParams[5] + "&";
                 }
                 else if (requestType == "tescoData")
@@ -144,7 +145,16 @@ namespace StockApp.HTTP
                 strResponse = Regex.Unescape(strResponse);
                 strResponse = strResponse.Replace(@"\", "");
 
-                rootJson = JsonConvert.DeserializeObject<List<tescoApiJson>>(strResponse);
+                rootJson = JsonConvert.DeserializeObject<ObservableCollection<tescoApiJson>>(strResponse);
+
+                if (requestType == "tescoData")
+                {
+                    foreach (tescoApiJson item in rootJson)
+                    {
+                        item.flags = new Dictionary<string, string>();
+                        item.flags.Add("dataReturned", "true");
+                    }
+                }
             }
             catch(MalformedURLException error)
             {
@@ -163,13 +173,56 @@ namespace StockApp.HTTP
                 uRLConnection.Disconnect();
             }
 
+
+
             return rootJson;
             
+        }
+
+        private void processFinish(ObservableCollection<tescoApiJson> jsonList)
+        {
+            ObservableCollection<tescoApiJson> tlist = StockAppApplicaiton.getconfig().tescoApiList;
+            
+            if( StockAppApplicaiton.getconfig().acct != null && jsonList != null)
+            {
+                foreach (tescoApiJson rootJson in jsonList)
+                {
+                    if (!tlist.Contains(rootJson))
+                    {
+                        DateTime dateTime = DateTime.Now.Date;
+                        DateTime expDate;
+                        expDate = Convert.ToDateTime(rootJson.expiryDate);
+
+                        if (expDate.ToString() == "" || expDate == null || expDate.ToShortDateString() == "01/01/0001")
+                        {
+                            expDate = new DateTime(2222, 01, 01);
+                            rootJson.expiryDate = expDate.ToShortDateString();
+                        }
+                        int comparedDate = DateTime.Compare(dateTime, expDate);
+                        int amount;
+                        bool success = Int32.TryParse(rootJson.Amount, out amount);
+                        if (success)
+                        {
+                            if (amount > 0 && comparedDate < 0)
+                            {
+                                rootJson.flags["onShoppingList"] = "false";
+                            }
+                            else
+                            {
+                                rootJson.flags["onShoppingList"] = "true";
+                            }
+                            tlist.Add(rootJson);
+                        }
+
+                    }
+                }
+            }
         }
 
         protected override void OnPostExecute(string result)
         {
             base.OnPostExecute(result);
+            processFinish(rootJson);
             activityResponse.proccessFinish(rootJson);
         }
 

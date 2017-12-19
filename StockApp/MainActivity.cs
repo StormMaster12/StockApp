@@ -13,6 +13,7 @@ using System.Collections.Generic;
 
 using StockApp.BarcodeReader;
 using StockApp.StockItems;
+using StockApp.ShoppingList;
 
 namespace StockApp
 {
@@ -35,6 +36,7 @@ namespace StockApp
             ViewPagerAdapter adapter = new ViewPagerAdapter(SupportFragmentManager);
             fragments.Add(BarcodeFragment.newInstance());
             fragments.Add(ItemsFragment.newInstance());
+            fragments.Add(ShoppingListFragment.newInstance());
             adapter.fragments = fragments;
 
             ((StockAppApplicaiton)this.Application).ItemsFragment = fragments[1] as ItemsFragment;

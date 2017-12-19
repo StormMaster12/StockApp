@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_height="match_parent"
+        android:layout_width="96dp"
+        android:id="@+id/ShoppingList_TextView"
+        android:layout_toLeftOf="@+id/ShoppingList_BoughtItem"
+        android:text="Text"
+        android:layout_alignParentLeft="true" />
+    <CheckBox
+        android:layout_height="match_parent"
+        android:layout_width="96dp"
+        android:id="@+id/ShoppingList_BoughtItem"
+        android:layout_alignParentRight="true" />
+</RelativeLayout>

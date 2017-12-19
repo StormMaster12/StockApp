@@ -150,6 +150,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BarcodeReader\DatePickerDialogFragment.cs" />
+    <Compile Include="BarcodeReader\IOnDatePickerResponse.cs" />
+    <Compile Include="ShoppingList\ShoppingListAdapter.cs" />
+    <Compile Include="ShoppingList\ShoppingListFragment.cs" />
     <Compile Include="SignIn\IOnSignIn.cs" />
     <Compile Include="StockAppApplicaiton.cs" />
     <Compile Include="BarcodeReader\BarcodeFragment.cs" />
@@ -194,6 +198,12 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\SignIn.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_ShoppingList.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\ShoppingList_RowFragment.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

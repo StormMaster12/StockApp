@@ -14,7 +14,7 @@ namespace StockApp.HTTP
         [JsonProperty("expiryDate")]
         public string expiryDate { get; set; }
         [JsonProperty("Flags")]
-        public string flags { get; set; }
+        public Dictionary<string,string> flags { get; set; }
 
         public class Items
         {

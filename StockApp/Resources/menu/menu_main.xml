@@ -12,6 +12,10 @@
     <item android:id="@+id/action_settings"
           android:title="Settings"
           android:showAsAction="never"/>
+  
+  <item android:id="@+id/menu_refresh"
+          android:title="Refresh"
+          android:showAsAction="never"/>
 
 </menu>
 
