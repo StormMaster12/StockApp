@@ -84,7 +84,7 @@ namespace StockApp.SignIn
             signInButton.Enabled = false;
 
             gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DefaultSignIn)
-                .RequestIdToken("918121048883-kt94ua84h8cfus3dejf64okgqvngagm3.apps.googleusercontent.com")
+                .RequestIdToken("50844503444-ufvgj1l9i07r57agtfegnt5tivsvu5b9.apps.googleusercontent.com")
                 .RequestEmail()
                 .Build();
             mGoogleApiClient = new GoogleApiClient.Builder(this)
